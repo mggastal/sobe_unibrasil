@@ -1,0 +1,310 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>UniBrasil — Projeção Jun–Ago 2026</title>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
+<link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+:root{--pd:#1E0B4B;--go:#F0C040;--cy:#00C9D1;--pk:#E8447A;--gr:#3DDC84;--wh:#FFFFFF;--w6:rgba(255,255,255,0.6);--cb:rgba(255,255,255,0.06);--br:rgba(255,255,255,0.10);}
+*{margin:0;padding:0;box-sizing:border-box;}
+body{font-family:'Montserrat',sans-serif;background:var(--pd);color:var(--wh);padding:40px 52px 60px;}
+
+.header{display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:10px;}
+.header h1{font-size:9px;font-weight:600;letter-spacing:2px;text-transform:uppercase;color:var(--go);margin-bottom:5px;}
+.header h2{font-size:22px;font-weight:800;}
+.header h2 span{color:var(--go);}
+.header p{font-size:12px;color:var(--w6);margin-top:5px;}
+.badge-conf{background:rgba(61,220,132,.12);border:1px solid rgba(61,220,132,.35);border-radius:10px;padding:10px 16px;text-align:right;}
+.badge-conf .bl{font-size:9px;color:var(--gr);letter-spacing:2px;text-transform:uppercase;}
+.badge-conf .bv{font-size:15px;font-weight:700;margin-top:2px;}
+
+.divider{border:none;border-top:1px solid var(--br);margin:22px 0;}
+
+.kpi-row{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin-bottom:24px;}
+.kpi{background:var(--cb);border:1px solid var(--br);border-radius:12px;padding:16px 18px;position:relative;overflow:hidden;}
+.kpi::before{content:'';position:absolute;top:0;left:0;right:0;height:3px;border-radius:12px 12px 0 0;}
+.kpi.go::before{background:var(--go);}
+.kpi.cy::before{background:var(--cy);}
+.kpi.gr::before{background:var(--gr);}
+.kpi-l{font-size:9px;font-weight:600;letter-spacing:1.5px;text-transform:uppercase;color:var(--w6);margin-bottom:6px;}
+.kpi-v{font-size:20px;font-weight:700;}
+.kpi.go .kpi-v{color:var(--go);}
+.kpi.cy .kpi-v{color:var(--cy);}
+.kpi.gr .kpi-v{color:var(--gr);}
+.kpi-s{font-size:10px;color:var(--w6);margin-top:4px;}
+
+.sec{font-size:9px;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:var(--go);margin-bottom:4px;}
+
+.month-cards{display:grid;grid-template-columns:1fr 1fr 1fr;gap:14px;margin-bottom:24px;}
+.mc{background:var(--cb);border:1px solid var(--br);border-radius:16px;padding:20px;}
+.mc.jun{border-color:rgba(61,220,132,.35);}
+.mc-tag{font-size:9px;font-weight:700;letter-spacing:2px;text-transform:uppercase;margin-bottom:4px;}
+.mc.jun .mc-tag{color:var(--gr);}
+.mc.jul .mc-tag{color:var(--go);}
+.mc.ago .mc-tag{color:var(--cy);}
+.mc h3{font-size:17px;font-weight:800;margin-bottom:14px;}
+.mc-row{display:flex;justify-content:space-between;align-items:center;padding:7px 0;border-bottom:1px solid var(--br);}
+.mc-row:last-child{border-bottom:none;}
+.mc-lbl{font-size:11px;color:var(--w6);}
+.mc-val{font-size:13px;font-weight:700;}
+
+.card{background:var(--cb);border:1px solid var(--br);border-radius:16px;padding:20px;margin-bottom:16px;}
+.ct{font-size:11px;font-weight:700;margin-bottom:2px;}
+.cs{font-size:10px;color:var(--w6);margin-bottom:14px;}
+
+/* CENÁRIOS TABLE */
+.cen-table{width:100%;border-collapse:separate;border-spacing:0;}
+.cen-table thead th{background:rgba(255,255,255,.06);padding:10px 14px;font-size:10px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;color:var(--go);text-align:left;}
+.cen-table thead th:first-child{border-radius:8px 0 0 0;}
+.cen-table thead th:last-child{border-radius:0 8px 0 0;}
+.cen-table tbody td{padding:10px 14px;font-size:12px;border-bottom:1px solid var(--br);vertical-align:middle;}
+.cen-table tbody tr:last-child td{border-bottom:none;}
+.cen-table tbody tr:hover td{background:rgba(255,255,255,.03);}
+.cen-table tr.atual td{background:rgba(240,192,64,0.06);}
+.tag{display:inline-block;padding:2px 8px;border-radius:20px;font-size:10px;font-weight:700;}
+.tag-atual{background:rgba(255,255,255,.1);color:#ffffff;border:1px solid rgba(255,255,255,.3);}
+.tag-bom{background:rgba(61,220,132,.15);color:var(--gr);border:1px solid rgba(61,220,132,.3);}
+.tag-med{background:rgba(240,192,64,.15);color:var(--go);border:1px solid rgba(240,192,64,.3);}
+.tag-ruim{background:rgba(232,68,122,.15);color:var(--pk);border:1px solid rgba(232,68,122,.3);}
+
+@media(max-width:900px){body{padding:20px 16px 40px;}.kpi-row,.month-cards{grid-template-columns:1fr;}}
+</style>
+</head>
+<body>
+
+<div class="header">
+  <div>
+    <h1>UniBrasil Centro Universitário</h1>
+    <h2>Projeção de <span>Captação</span> · Jun–Ago 2026</h2>
+    <p>Base: resultados fechados de Mai/2026 · CPL R$ 17,69 · Plano de mídia aprovado</p>
+  </div>
+  <div class="badge-conf">
+    <div class="bl">Junho confirmado</div>
+    <div class="bv" style="color:var(--gr)">✅ R$ 140.000 pago</div>
+  </div>
+</div>
+
+<hr class="divider">
+
+<div class="sec">Maio 2026 — Fechado</div>
+<div class="kpi-row" style="margin-top:10px">
+  <div class="kpi go"><div class="kpi-l">Investimento</div><div class="kpi-v">R$ 34.428</div><div class="kpi-s">realizado</div></div>
+  <div class="kpi cy"><div class="kpi-l">Leads Gerados</div><div class="kpi-v">1.946</div><div class="kpi-s">total do mês</div></div>
+  <div class="kpi gr"><div class="kpi-l">CPL Médio</div><div class="kpi-v">R$ 17,69</div><div class="kpi-s">referência da projeção</div></div>
+</div>
+
+<div class="sec">Projeção · Plano de Mídia</div>
+<div class="month-cards" style="margin-top:10px">
+  <div class="mc jun">
+    <div class="mc-tag">✅ Verba confirmada</div>
+    <h3>Junho 2026</h3>
+    <div class="mc-row"><span class="mc-lbl">Verba Presencial</span><span class="mc-val" style="color:var(--go)">R$ 80.000</span></div>
+    <div class="mc-row"><span class="mc-lbl">Verba EAD/Semi</span><span class="mc-val" style="color:var(--go)">R$ 60.000</span></div>
+    <div class="mc-row"><span class="mc-lbl">Total investido</span><span class="mc-val" style="color:var(--go)">R$ 140.000</span></div>
+    <div class="mc-row"><span class="mc-lbl">Leads Presencial</span><span class="mc-val" style="color:var(--cy)">~4.522</span></div>
+    <div class="mc-row"><span class="mc-lbl">Leads EAD/Semi</span><span class="mc-val" style="color:var(--cy)">~3.391</span></div>
+    <div class="mc-row"><span class="mc-lbl">Total leads</span><span class="mc-val" style="color:var(--gr);font-size:16px">~7.913</span></div>
+  </div>
+  <div class="mc jul">
+    <div class="mc-tag">Plano previsto</div>
+    <h3>Julho 2026</h3>
+    <div class="mc-row"><span class="mc-lbl">Verba Presencial</span><span class="mc-val" style="color:var(--go)">R$ 80.000</span></div>
+    <div class="mc-row"><span class="mc-lbl">Verba EAD/Semi</span><span class="mc-val" style="color:var(--go)">R$ 50.000</span></div>
+    <div class="mc-row"><span class="mc-lbl">Total investido</span><span class="mc-val" style="color:var(--go)">R$ 130.000</span></div>
+    <div class="mc-row"><span class="mc-lbl">Leads Presencial</span><span class="mc-val" style="color:var(--cy)">~4.522</span></div>
+    <div class="mc-row"><span class="mc-lbl">Leads EAD/Semi</span><span class="mc-val" style="color:var(--cy)">~2.825</span></div>
+    <div class="mc-row"><span class="mc-lbl">Total leads</span><span class="mc-val" style="color:var(--go);font-size:16px">~7.347</span></div>
+  </div>
+  <div class="mc ago">
+    <div class="mc-tag">Plano previsto</div>
+    <h3>Agosto 2026</h3>
+    <div class="mc-row"><span class="mc-lbl">Verba Presencial</span><span class="mc-val" style="color:var(--go)">R$ 50.000</span></div>
+    <div class="mc-row"><span class="mc-lbl">Verba EAD/Semi</span><span class="mc-val" style="color:var(--go)">R$ 30.000</span></div>
+    <div class="mc-row"><span class="mc-lbl">Total investido</span><span class="mc-val" style="color:var(--go)">R$ 80.000</span></div>
+    <div class="mc-row"><span class="mc-lbl">Leads Presencial</span><span class="mc-val" style="color:var(--cy)">~2.825</span></div>
+    <div class="mc-row"><span class="mc-lbl">Leads EAD/Semi</span><span class="mc-val" style="color:var(--cy)">~1.696</span></div>
+    <div class="mc-row"><span class="mc-lbl">Total leads</span><span class="mc-val" style="color:var(--cy);font-size:16px">~4.522</span></div>
+  </div>
+</div>
+
+<!-- ALERTA -->
+<div style="background:rgba(232,68,122,.08);border:1px solid rgba(232,68,122,.3);border-radius:12px;padding:14px 18px;margin-bottom:16px;display:flex;gap:12px;align-items:flex-start;">
+  <span style="font-size:16px;flex-shrink:0">⚠️</span>
+  <p style="font-size:11px;color:var(--w6);line-height:1.7;"><strong style="color:#fff">Verba de junho entrou no dia 08/06 pela manhã.</strong> O que foi utilizado em junho até então foi apenas o saldo remanescente de maio — a verba de segurança que mantemos sempre após o fechamento do mês. A projeção completa de junho (R$ 140K) considera o mês inteiro a partir da entrada dos recursos.</p>
+</div>
+
+<!-- CHART: Verba x Leads full width -->
+<div class="card">
+  <div class="ct">Verba × Leads Projetados · Mai–Ago</div>
+  <div class="cs">Barras = verba investida (R$) · Linha = leads projetados com CPL R$ 17,69</div>
+  <div style="height:280px"><canvas id="ch_main"></canvas></div>
+</div>
+
+<!-- CENÁRIOS TABLE -->
+<div class="sec" style="margin-bottom:10px">Cenários de CPL · Jun–Ago 2026</div>
+<div class="card">
+  <table class="cen-table">
+    <thead>
+      <tr>
+        <th>Cenário</th>
+        <th>CPL</th>
+        <th>Junho · R$140K</th>
+        <th>Julho · R$130K</th>
+        <th>Agosto · R$80K</th>
+        <th>Total Jun–Ago</th>
+      </tr>
+    </thead>
+    <tbody id="cen_tbody"></tbody>
+  </table>
+</div>
+
+<script>
+Chart.register({ id:'lbl', afterDraw(c){ if(c.options._lbl) c.options._lbl(c); } });
+
+window.addEventListener('load', function() {
+
+  const verbas = [34428, 140000, 130000, 80000];
+  const leads  = [1946,  7913,   7347,   4522];
+
+  new Chart(document.getElementById('ch_main'), {
+    data: {
+      labels: ['Mai (Real)', 'Jun (Proj.)', 'Jul (Proj.)', 'Ago (Proj.)'],
+      datasets: [
+        {
+          type: 'bar',
+          label: 'Verba (R$)',
+          data: verbas,
+          backgroundColor: '#F0C040cc',
+          borderColor: '#F0C040',
+          borderWidth: 1,
+          borderRadius: 5,
+          yAxisID: 'yV',
+          order: 2
+        },
+        {
+          type: 'line',
+          label: 'Leads',
+          data: leads,
+          borderColor: '#3DDC84',
+          backgroundColor: 'rgba(61,220,132,0.08)',
+          fill: true,
+          pointBackgroundColor: '#3DDC84',
+          pointBorderColor: '#fff',
+          pointBorderWidth: 2,
+          pointRadius: 7,
+          pointHoverRadius: 9,
+          tension: 0.35,
+          yAxisID: 'yL',
+          order: 1
+        }
+      ]
+    },
+    options: {
+      responsive: true,
+      maintainAspectRatio: false,
+      plugins: {
+        legend: { labels: { color: 'rgba(255,255,255,0.65)', font: { family: 'Montserrat', size: 11 }, boxWidth: 12, padding: 14 } },
+        tooltip: {
+          backgroundColor: '#1E0B4B', borderColor: 'rgba(255,255,255,0.15)', borderWidth: 1,
+          titleColor: '#F0C040', bodyColor: 'rgba(255,255,255,0.85)', padding: 10,
+          callbacks: {
+            label(ctx) {
+              if (ctx.datasetIndex === 0) return ' Verba: R$ ' + ctx.parsed.y.toLocaleString('pt-BR');
+              return ' Leads: ' + ctx.parsed.y.toLocaleString('pt-BR');
+            }
+          }
+        }
+      },
+      scales: {
+        x: {
+          ticks: { color: 'rgba(255,255,255,0.6)', font: { family: 'Montserrat', size: 11 } },
+          grid: { color: 'rgba(255,255,255,0.05)' }
+        },
+        yV: {
+          type: 'linear', position: 'left', min: 0, max: 200000,
+          ticks: { color: '#F0C040bb', font: { size: 11 }, callback: v => 'R$' + (v/1000) + 'K' },
+          grid: { color: 'rgba(255,255,255,0.06)' },
+          title: { display: true, text: 'Verba (R$)', color: '#F0C04088', font: { size: 11 } }
+        },
+        yL: {
+          type: 'linear', position: 'right', min: 0, max: 10000,
+          ticks: { color: '#3DDC84bb', font: { size: 11 }, callback: v => v.toLocaleString('pt-BR') },
+          grid: { display: false },
+          title: { display: true, text: 'Leads', color: '#3DDC8488', font: { size: 11 } }
+        }
+      },
+      animation: {
+        onComplete(e) {
+          const chart = e.chart;
+          const ctx = chart.ctx;
+          chart.getDatasetMeta(0).data.forEach((bar, i) => {
+            ctx.save();
+            ctx.fillStyle = 'rgba(0,0,0,0.8)';
+            ctx.font = 'bold 11px Montserrat, sans-serif';
+            ctx.textAlign = 'center';
+            ctx.textBaseline = 'bottom';
+            const bottom = chart.scales.yV.getPixelForValue(0);
+            ctx.fillText('R$' + Math.round(verbas[i]/1000) + 'K', bar.x, bottom - 6);
+            ctx.restore();
+          });
+          chart.getDatasetMeta(1).data.forEach((pt, i) => {
+            ctx.save();
+            ctx.fillStyle = '#3DDC84';
+            ctx.font = 'bold 11px Montserrat, sans-serif';
+            ctx.textAlign = 'center';
+            ctx.textBaseline = 'bottom';
+            ctx.fillText(leads[i].toLocaleString('pt-BR'), pt.x, pt.y - 10);
+            ctx.restore();
+          });
+        }
+      }
+    }
+  });
+
+  // Cenários table
+  const cenarios = [
+    { label: 'Atual · Base Maio', cpl: 17.69, tagClass: 'tag-atual', provavel: false },
+    { label: 'Bom',               cpl: 15,    tagClass: 'tag-bom',   provavel: false },
+    { label: 'Médio',             cpl: 25,    tagClass: 'tag-med',   provavel: true  },
+    { label: 'Ruim',              cpl: 35,    tagClass: 'tag-ruim',  provavel: false },
+  ];
+  const vMeses = { jun: 140000, jul: 130000, ago: 80000 };
+  const fR = v => v.toLocaleString('pt-BR');
+  const tb = document.getElementById('cen_tbody');
+
+  cenarios.forEach(s => {
+    const lJun = Math.round(vMeses.jun / s.cpl);
+    const lJul = Math.round(vMeses.jul / s.cpl);
+    const lAgo = Math.round(vMeses.ago / s.cpl);
+    const total = lJun + lJul + lAgo;
+    const valCol = s.tagClass === 'tag-bom' ? 'color:var(--gr)'
+                 : s.tagClass === 'tag-med' ? 'color:var(--go)'
+                 : s.tagClass === 'tag-ruim'? 'color:var(--pk)'
+                 : 'color:#ffffff';
+    const rowBg = s.provavel ? 'background:rgba(240,192,64,0.06);' : '';
+
+    const provavelBadge = s.provavel
+      ? `<span style="display:inline-block;margin-left:8px;padding:2px 7px;border-radius:20px;font-size:9px;font-weight:700;background:rgba(240,192,64,0.15);color:var(--go);border:1px solid rgba(240,192,64,0.4);">★ Mais provável</span>
+         <div style="font-size:9px;color:rgba(255,255,255,0.4);margin-top:3px;">Aumento de invest. tende a elevar o CPL</div>`
+      : '';
+
+    tb.innerHTML += `
+      <tr style="${rowBg}">
+        <td>
+          <span class="tag ${s.tagClass}">${s.label}</span>
+          ${provavelBadge}
+        </td>
+        <td style="font-weight:700;${valCol}">R$ ${s.cpl.toFixed(2)}</td>
+        <td style="${valCol};font-weight:600">~${fR(lJun)}</td>
+        <td style="${valCol};font-weight:600">~${fR(lJul)}</td>
+        <td style="${valCol};font-weight:600">~${fR(lAgo)}</td>
+        <td style="${valCol};font-weight:800;font-size:14px">~${fR(total)}</td>
+      </tr>`;
+  });
+
+});
+</script>
+</body>
+</html>
