@@ -586,7 +586,7 @@ function renderMeta(){
       }},
       tooltip:{callbacks:{label:c=>c.dataset.type==='bar'?c.dataset.label+': '+intf(c.raw):c.dataset.label+': '+money(c.raw)}}},
     scales:{x:{stacked:true,grid:{display:false},ticks:{color:p.muted,font:{size:dense?8:9},maxRotation:0,autoSkip:true,maxTicksLimit:dense?12:13}},
-      yL:{stacked:true,position:'left',grid:{color:p.border},ticks:{color:p.muted,font:{size:9}},title:{display:true,text:'Leads',color:p.muted,font:{size:9}}},
+      yL:{stacked:true,position:'left',grace:'12%',grid:{color:p.border},ticks:{color:p.muted,font:{size:9}},title:{display:true,text:'Leads',color:p.muted,font:{size:9}}},
       yI:{position:'right',grid:{display:false},ticks:{color:p.muted,font:{size:9},callback:v=>money(v)}},
       yC:{position:'right',display:false}}}});
 
@@ -689,7 +689,7 @@ function renderPublico(){
   draw('chAge',{type:'bar',data:{labels:ageOrder,datasets:[{label:'Leads',data:ageOrder.map(a=>(aA[a]||{}).ld||0),backgroundColor:p.gold,borderRadius:5}]},
     options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false},
       datalabels:{display:lblDisplay(false),color:p.text,font:lblFont(),anchor:'end',align:'top',offset:1,formatter:v=>v>0?intf(v):''},
-      tooltip:{callbacks:{label:c=>'Leads: '+intf(c.raw)}}},scales:{x:{grid:{display:false},ticks:{color:p.muted}},y:{grid:{color:p.border},ticks:{color:p.muted}}}}});
+      tooltip:{callbacks:{label:c=>'Leads: '+intf(c.raw)}}},scales:{x:{grid:{display:false},ticks:{color:p.muted}},y:{grace:'14%',grid:{color:p.border},ticks:{color:p.muted}}}}});
   document.getElementById('tAgeBody').innerHTML=ageOrder.map(a=>{const o=aA[a]||{sp:0,ld:0};const cpl=o.ld?o.sp/o.ld:0;return `<tr><td>${a}</td><td class="num">${money(o.sp)}</td><td class="num">${intf(o.ld)}</td><td class="num">${money(cpl)}</td></tr>`;}).join('');
 }
 
@@ -712,7 +712,7 @@ function renderGoogle(){
       datalabels:{display:lblDisplay(true),color:p.text,font:lblFont(),anchor:'end',align:'top',offset:1,formatter:(v,ctx)=>ctx.dataset.label==='Conversões'&&v>0?intf(v):''},
       tooltip:{callbacks:{label:c=>c.dataset.label==='Conversões'?'Conversões: '+intf(c.raw):c.dataset.label+': '+money(c.raw)}}},
     scales:{x:{grid:{display:false},ticks:{color:p.muted,font:{size:8},maxTicksLimit:12}},
-      yL:{position:'left',grid:{color:p.border},ticks:{color:p.muted,font:{size:9}},title:{display:true,text:'Conversões',color:p.muted,font:{size:9}}},
+      yL:{position:'left',grace:'12%',grid:{color:p.border},ticks:{color:p.muted,font:{size:9}},title:{display:true,text:'Conversões',color:p.muted,font:{size:9}}},
       yI:{position:'right',grid:{display:false},ticks:{color:p.muted,font:{size:9},callback:v=>money(v)}},
       yC:{position:'right',display:false}}}});
   const agg={};rows.forEach(r=>{const k=r.c+'||'+r.ch;(agg[k]=agg[k]||{c:r.c,ch:r.ch,sp:0,cv:0,ck:0});agg[k].sp+=r.sp;agg[k].cv+=r.cv;agg[k].ck+=r.ck;});
@@ -733,7 +733,7 @@ function miniBar(id,labels,data,color,fmtv){
     options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false},
       datalabels:{display:lblDisplay(false),color:p.text,font:lblFont(),anchor:'end',align:'top',offset:1,formatter:fmtv},
       tooltip:{callbacks:{label:c=>fmtv(c.raw)}}},
-      scales:{x:{grid:{display:false},ticks:{color:p.muted,font:{size:9}}},y:{grid:{color:p.border},ticks:{color:p.muted,font:{size:9}}}}}});
+      scales:{x:{grid:{display:false},ticks:{color:p.muted,font:{size:9}}},y:{grace:'14%',grid:{color:p.border},ticks:{color:p.muted,font:{size:9}}}}}});
 }
 function renderHistMeta(){
   const p=P(),m=byMonth(D.meta,['sp','ld','im','ck']);
@@ -753,7 +753,7 @@ function renderHistMeta(){
       datalabels:{display:lblDisplay(false),color:p.text,font:lblFont(),anchor:'end',align:'top',offset:1,formatter:(v,ctx)=>ctx.dataset.label==='Leads'&&v>0?intf(v):''},
       tooltip:{callbacks:{label:c=>c.dataset.label==='Leads'?'Leads: '+intf(c.raw):c.dataset.label+': '+money(c.raw)}}},
     scales:{x:{grid:{display:false},ticks:{color:p.muted,font:{size:10}}},
-      yL:{position:'left',grid:{color:p.border},ticks:{color:p.muted,font:{size:9}},title:{display:true,text:'Leads',color:p.muted,font:{size:9}}},
+      yL:{position:'left',grace:'12%',grid:{color:p.border},ticks:{color:p.muted,font:{size:9}},title:{display:true,text:'Leads',color:p.muted,font:{size:9}}},
       yI:{position:'right',grid:{display:false},ticks:{color:p.muted,font:{size:9},callback:v=>money(v)}},
       yC:{position:'right',display:false}}}});
   miniBar('chHmCPM',labels,m.map(x=>x.im?x.sp/x.im*1000:0),p.metaBar,v=>money(v));
@@ -780,7 +780,7 @@ function renderHistGoogle(){
       datalabels:{display:lblDisplay(false),color:p.text,font:lblFont(),anchor:'end',align:'top',offset:1,formatter:(v,ctx)=>ctx.dataset.label==='Conversões'&&v>0?intf(v):''},
       tooltip:{callbacks:{label:c=>c.dataset.label==='Conversões'?'Conversões: '+intf(c.raw):c.dataset.label+': '+money(c.raw)}}},
     scales:{x:{grid:{display:false},ticks:{color:p.muted,font:{size:10}}},
-      yL:{position:'left',grid:{color:p.border},ticks:{color:p.muted,font:{size:9}},title:{display:true,text:'Conversões',color:p.muted,font:{size:9}}},
+      yL:{position:'left',grace:'12%',grid:{color:p.border},ticks:{color:p.muted,font:{size:9}},title:{display:true,text:'Conversões',color:p.muted,font:{size:9}}},
       yI:{position:'right',grid:{display:false},ticks:{color:p.muted,font:{size:9},callback:v=>money(v)}},
       yC:{position:'right',display:false}}}});
   miniBar('chHgCPC',labels,m.map(x=>x.ck?x.sp/x.ck:0),p.googleBar,v=>money(v));
@@ -837,7 +837,7 @@ function consolidado(ids,meta,goog,kws,view){
       }},
       tooltip:{callbacks:{label:c=>c.dataset.type==='bar'?c.dataset.label+': '+intf(c.raw):(c.dataset.label==='Investimento'?'Investimento: '+money(c.raw):'CPL: '+money(c.raw))}}},
     scales:{x:{stacked:true,grid:{display:false},ticks:{color:p.muted,font:{size:mes?10:8},maxTicksLimit:12}},
-      yL:{stacked:true,position:'left',grid:{color:p.border},ticks:{color:p.muted,font:{size:9}},title:{display:true,text:'Resultados',color:p.muted,font:{size:9}}},
+      yL:{stacked:true,position:'left',grace:'12%',grid:{color:p.border},ticks:{color:p.muted,font:{size:9}},title:{display:true,text:'Resultados',color:p.muted,font:{size:9}}},
       yI:{position:'right',grid:{display:false},ticks:{color:p.muted,font:{size:9},callback:v=>money(v)}},
       yC:{position:'right',display:false}}}});
 
