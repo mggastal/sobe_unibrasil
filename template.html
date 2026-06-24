@@ -4,6 +4,8 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>UniBrasil — Dashboard de Captação</title>
+<link rel="icon" type="image/png" href="sobe.png">
+<link rel="shortcut icon" type="image/png" href="sobe.png">
 <link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Mono:wght@400;500&family=DM+Sans:wght@300;400;500;600;700&display=swap" rel="stylesheet">
 <script>/*!
  * Chart.js v4.4.1
@@ -103,7 +105,7 @@ body{font-family:'DM Sans',sans-serif;background:var(--bgGrad);background-attach
 .fontslider span{font-size:9px;color:var(--muted2);font-weight:700;}
 .fontslider input{width:54px;height:3px;accent-color:var(--accent);cursor:pointer;}
 
-.content{padding:18px 22px 60px;max-width:1500px;}
+.content{padding:18px 22px 60px;max-width:1500px;margin:0 auto;}
 .page{display:none;}
 .page.active{display:block;animation:fade .3s;}
 @keyframes fade{from{opacity:0;transform:translateY(5px);}to{opacity:1;transform:none;}}
@@ -193,7 +195,7 @@ body{font-family:'DM Sans',sans-serif;background:var(--bgGrad);background-attach
 .ad-mt .v{font-family:'Syne';font-weight:700;font-size:12px;}
 
 .muted-note{font-size:11px;color:var(--muted);background:var(--surface2);border:1px solid var(--border);border-radius:10px;padding:12px 14px;margin-top:14px;line-height:1.6;}
-.foot{padding:18px 22px;color:var(--muted2);font-size:11px;display:flex;justify-content:space-between;flex-wrap:wrap;gap:6px;border-top:1px solid var(--border);}
+.foot{padding:18px 22px;color:var(--muted2);font-size:11px;display:flex;justify-content:center;align-items:center;flex-wrap:wrap;gap:6px;border-top:1px solid var(--border);}
 .foot-sobe{display:inline-flex;align-items:center;gap:6px;}
 .foot-logo{height:18px;width:auto;vertical-align:middle;opacity:.85;}
 [data-theme="dark"] .foot-logo{filter:brightness(0) invert(1);opacity:.9;}
@@ -351,8 +353,8 @@ body{font-family:'DM Sans',sans-serif;background:var(--bgGrad);background-attach
       <div class="sec-h">Campanhas</div>
       <div class="tc"><table><thead><tr><th>Campanha</th><th>Canal</th><th class="num">Invest.</th><th class="num">Conversões</th><th class="num">Custo/conv</th><th class="num">Cliques</th></tr></thead><tbody id="gCampsBody"></tbody></table></div>
       <div class="sec-h" style="margin-top:22px">Top Palavras-chave</div>
-      <div class="tc"><table><thead><tr><th>#</th><th>Palavra-chave</th><th class="num">Invest.</th><th class="num">Conversões</th><th class="num">Cliques</th><th class="num">CTR</th><th class="num">CPC</th></tr></thead><tbody id="gKwBody"></tbody></table></div>
-      <div class="muted-note">No Google, "conversão" usa <b>All Conversions</b> — métrica diferente de "lead" do Meta. Por isso não somamos os dois.</div>
+      <div class="tc"><table><thead><tr><th>#</th><th>Palavra-chave</th><th class="num">Invest.</th><th class="num">Conversões</th><th class="num">Custo/conv.</th><th class="num">Cliques</th><th class="num">CTR</th><th class="num">CPC</th></tr></thead><tbody id="gKwBody"></tbody></table></div>
+      <div class="muted-note">No Google, "conversão" usa a métrica <b>Conversions</b> (mesma do Looker) — diferente de "lead" do Meta. Por isso as duas não são somadas.</div>
     </div>
 
     <!-- HISTÓRICO META -->
@@ -402,7 +404,7 @@ body{font-family:'DM Sans',sans-serif;background:var(--bgGrad);background-attach
       <div class="sec-h">Campanhas</div>
       <div class="tc"><table><thead><tr><th>Campanha</th><th>Canal</th><th class="num">Invest.</th><th class="num">Resultados</th><th class="num">Custo/result.</th><th class="num">Cliques</th></tr></thead><tbody id="rsCampsBody"></tbody></table></div>
       <div class="sec-h" style="margin-top:22px">Top Palavras-chave (Google)</div>
-      <div class="tc"><table><thead><tr><th>#</th><th>Palavra-chave</th><th class="num">Invest.</th><th class="num">Conversões</th><th class="num">Cliques</th><th class="num">CTR</th><th class="num">CPC</th></tr></thead><tbody id="rsKwBody"></tbody></table></div>
+      <div class="tc"><table><thead><tr><th>#</th><th>Palavra-chave</th><th class="num">Invest.</th><th class="num">Conversões</th><th class="num">Custo/conv.</th><th class="num">Cliques</th><th class="num">CTR</th><th class="num">CPC</th></tr></thead><tbody id="rsKwBody"></tbody></table></div>
       <div class="muted-note">As barras empilham <b>Leads do Meta</b> (azul) e <b>Conversões do Google</b> (amarelo) — métricas diferentes, juntas só para visão consolidada. Investimento (verde) é a soma dos canais; CPL é investimento total ÷ resultados.</div>
     </div>
 
@@ -423,7 +425,7 @@ body{font-family:'DM Sans',sans-serif;background:var(--bgGrad);background-attach
       <div class="sec-h">Campanhas 2025</div>
       <div class="tc"><table><thead><tr><th>Campanha</th><th>Canal</th><th class="num">Invest.</th><th class="num">Resultados</th><th class="num">Custo/result.</th><th class="num">Cliques</th></tr></thead><tbody id="a25CampsBody"></tbody></table></div>
       <div class="sec-h" style="margin-top:22px">Top Palavras-chave 2025 (Google)</div>
-      <div class="tc"><table><thead><tr><th>#</th><th>Palavra-chave</th><th class="num">Invest.</th><th class="num">Conversões</th><th class="num">Cliques</th><th class="num">CTR</th><th class="num">CPC</th></tr></thead><tbody id="a25KwBody"></tbody></table></div>
+      <div class="tc"><table><thead><tr><th>#</th><th>Palavra-chave</th><th class="num">Invest.</th><th class="num">Conversões</th><th class="num">Custo/conv.</th><th class="num">Cliques</th><th class="num">CTR</th><th class="num">CPC</th></tr></thead><tbody id="a25KwBody"></tbody></table></div>
     </div>
 
     <!-- 2024 -->
@@ -443,10 +445,10 @@ body{font-family:'DM Sans',sans-serif;background:var(--bgGrad);background-attach
       <div class="sec-h">Campanhas 2024</div>
       <div class="tc"><table><thead><tr><th>Campanha</th><th>Canal</th><th class="num">Invest.</th><th class="num">Resultados</th><th class="num">Custo/result.</th><th class="num">Cliques</th></tr></thead><tbody id="a24CampsBody"></tbody></table></div>
       <div class="sec-h" style="margin-top:22px">Top Palavras-chave 2024 (Google)</div>
-      <div class="tc"><table><thead><tr><th>#</th><th>Palavra-chave</th><th class="num">Invest.</th><th class="num">Conversões</th><th class="num">Cliques</th><th class="num">CTR</th><th class="num">CPC</th></tr></thead><tbody id="a24KwBody"></tbody></table></div>
+      <div class="tc"><table><thead><tr><th>#</th><th>Palavra-chave</th><th class="num">Invest.</th><th class="num">Conversões</th><th class="num">Custo/conv.</th><th class="num">Cliques</th><th class="num">CTR</th><th class="num">CPC</th></tr></thead><tbody id="a24KwBody"></tbody></table></div>
     </div>
   </div>
-  <div class="foot"><span>Gerado em <b id="footData">—</b></span><span class="foot-sobe">Desenvolvido por <img src="sobe.png" alt="Sobé Estratégias" class="foot-logo" onerror="this.style.display='none';this.insertAdjacentText('afterend','Sobé Estratégias')"></span></div>
+  <div class="foot"><span class="foot-sobe">Desenvolvido por <img src="sobe.png" alt="Sobé Estratégias" class="foot-logo" onerror="this.style.display='none';this.insertAdjacentText('afterend','Sobé Estratégias')"></span></div>
 </div>
 </div>
 
@@ -717,8 +719,8 @@ function renderGoogle(){
   const list=Object.values(agg).map(a=>({...a,cpl:a.cv?a.sp/a.cv:0})).sort((a,b)=>b.sp-a.sp);
   document.getElementById('gCampsBody').innerHTML=list.length?list.map(a=>`<tr><td>${a.c}</td><td><span class="badge b-brand">${a.ch}</span></td><td class="num">${money(a.sp)}</td><td class="num">${intf(a.cv)}</td><td class="num">${money(a.cpl)}</td><td class="num">${intf(a.ck)}</td></tr>`).join(''):'<tr><td colspan="6" class="empty">Sem dados no período</td></tr>';
   const kagg={};kwF().forEach(r=>{(kagg[r.kw]=kagg[r.kw]||{kw:r.kw,sp:0,cv:0,ck:0,im:0});const a=kagg[r.kw];a.sp+=r.sp;a.cv+=r.cv;a.ck+=r.ck;a.im+=r.im;});
-  const kl=Object.values(kagg).map(a=>({...a,ctr:a.im?a.ck/a.im*100:0,cpc:a.ck?a.sp/a.ck:0})).sort((a,b)=>b.sp-a.sp).slice(0,20);
-  document.getElementById('gKwBody').innerHTML=kl.length?kl.map((a,i)=>`<tr><td><b>${i+1}</b></td><td>${a.kw}</td><td class="num">${money(a.sp)}</td><td class="num">${intf(a.cv)}</td><td class="num">${intf(a.ck)}</td><td class="num">${fmt(a.ctr,2)}%</td><td class="num">${money(a.cpc)}</td></tr>`).join(''):'<tr><td colspan="7" class="empty">Sem palavras-chave no período</td></tr>';
+  const kl=Object.values(kagg).map(a=>({...a,ctr:a.im?a.ck/a.im*100:0,cpc:a.ck?a.sp/a.ck:0,cpconv:a.cv?a.sp/a.cv:0})).sort((a,b)=>b.sp-a.sp).slice(0,20);
+  document.getElementById('gKwBody').innerHTML=kl.length?kl.map((a,i)=>`<tr><td><b>${i+1}</b></td><td>${a.kw}</td><td class="num">${money(a.sp)}</td><td class="num">${intf(a.cv)}</td><td class="num">${a.cv?money(a.cpconv):'—'}</td><td class="num">${intf(a.ck)}</td><td class="num">${fmt(a.ctr,2)}%</td><td class="num">${money(a.cpc)}</td></tr>`).join(''):'<tr><td colspan="8" class="empty">Sem palavras-chave no período</td></tr>';
 }
 
 /* ============ HISTÓRICO MENSAL ============ */
@@ -846,8 +848,8 @@ function consolidado(ids,meta,goog,kws,view){
   document.getElementById(ids.camps).innerHTML=clist.length?clist.map(a=>`<tr><td style="max-width:340px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">${a.c}</td><td>${a.ch==='Meta'?'<span class="badge" style="background:rgba(37,99,235,.14);color:var(--metaBar)">Meta</span>':'<span class="badge b-ead">'+a.ch+'</span>'}</td><td class="num">${money(a.sp)}</td><td class="num">${intf(a.res)}</td><td class="num">${money(a.cpr)}</td><td class="num">${intf(a.ck)}</td></tr>`).join(''):'<tr><td colspan="6" class="empty">Sem dados</td></tr>';
 
   const kagg={};(kws||[]).forEach(r=>{(kagg[r.kw]=kagg[r.kw]||{kw:r.kw,sp:0,cv:0,ck:0,im:0});const a=kagg[r.kw];a.sp+=r.sp;a.cv+=r.cv;a.ck+=r.ck;a.im+=r.im;});
-  const kl=Object.values(kagg).map(a=>({...a,ctr:a.im?a.ck/a.im*100:0,cpc:a.ck?a.sp/a.ck:0})).sort((a,b)=>b.sp-a.sp).slice(0,20);
-  document.getElementById(ids.kw).innerHTML=kl.length?kl.map((a,i)=>`<tr><td><b>${i+1}</b></td><td>${a.kw}</td><td class="num">${money(a.sp)}</td><td class="num">${intf(a.cv)}</td><td class="num">${intf(a.ck)}</td><td class="num">${fmt(a.ctr,2)}%</td><td class="num">${money(a.cpc)}</td></tr>`).join(''):'<tr><td colspan="7" class="empty">Sem palavras-chave</td></tr>';
+  const kl=Object.values(kagg).map(a=>({...a,ctr:a.im?a.ck/a.im*100:0,cpc:a.ck?a.sp/a.ck:0,cpconv:a.cv?a.sp/a.cv:0})).sort((a,b)=>b.sp-a.sp).slice(0,20);
+  document.getElementById(ids.kw).innerHTML=kl.length?kl.map((a,i)=>`<tr><td><b>${i+1}</b></td><td>${a.kw}</td><td class="num">${money(a.sp)}</td><td class="num">${intf(a.cv)}</td><td class="num">${a.cv?money(a.cpconv):'—'}</td><td class="num">${intf(a.ck)}</td><td class="num">${fmt(a.ctr,2)}%</td><td class="num">${money(a.cpc)}</td></tr>`).join(''):'<tr><td colspan="8" class="empty">Sem palavras-chave</td></tr>';
 }
 
 function renderResumo(){
@@ -922,7 +924,6 @@ function toggleTheme(){
 document.getElementById('dtI').min=D.dmin;document.getElementById('dtI').max=D.dmax;
 document.getElementById('dtF').min=D.dmin;document.getElementById('dtF').max=D.dmax;
 document.getElementById('sbData').textContent=D.gerado_em;
-document.getElementById('footData').textContent=D.gerado_em;
 window.addEventListener('resize',()=>{Object.values(charts).forEach(c=>c.resize());});
 updateBanner();renderAll();
 </script>
