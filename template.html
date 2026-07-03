@@ -338,7 +338,7 @@ html[data-theme="light"][data-wb="1"]{--bgGrad:#ffffff;}
         </tr></thead><tbody id="tCampsBody"></tbody>
       </table></div>
 
-      <div class="sec-h" style="margin-top:22px">Perfil de Público <span class="expand" id="demoNote"></span></div>
+      <div class="sec-h" style="margin-top:22px">Perfil de Público</div>
       <div class="grid2">
         <div class="card">
           <div class="card-hd"><div><div class="card-t">Público por Gênero</div><div class="card-s">Investimento, leads e CPL</div></div></div>
@@ -351,7 +351,7 @@ html[data-theme="light"][data-wb="1"]{--bgGrad:#ffffff;}
           <div class="tc tc-c"><table><thead><tr><th>Faixa</th><th class="num">Invest.</th><th class="num">Leads</th><th class="num">CPL</th></tr></thead><tbody id="tAgeBody"></tbody></table></div>
         </div>
       </div>
-      <div class="sec-h" style="margin-top:22px">Posicionamento <span class="expand" id="posNote"></span></div>
+      <div class="sec-h" style="margin-top:22px">Posicionamento</div>
       <div class="card">
         <div class="card-hd"><div><div class="card-t">Leads por Posicionamento</div><div class="card-s">Onde os anúncios rodam — Feed, Stories, Reels…</div></div></div>
         <div class="cw" style="height:230px"><canvas id="chPos"></canvas></div>
@@ -392,6 +392,7 @@ html[data-theme="light"][data-wb="1"]{--bgGrad:#ffffff;}
       <div class="tc"><table><thead><tr><th>Campanha</th><th>Canal</th><th class="num">Invest.</th><th class="num">Conversões</th><th class="num">Custo/conv</th><th class="num">Cliques</th></tr></thead><tbody id="gCampsBody"></tbody></table></div>
       <div class="sec-h" style="margin-top:22px">Top Palavras-chave</div>
       <div class="tc"><table><thead><tr><th>#</th><th>Palavra-chave</th><th class="num">Invest.</th><th class="num">Conversões</th><th class="num">Custo/conv.</th><th class="num">Cliques</th><th class="num">CTR</th><th class="num">CPC</th></tr></thead><tbody id="gKwBody"></tbody></table></div>
+      <div id="gPublicoSec">
       <div class="sec-h" style="margin-top:22px">Perfil de Público (Google)</div>
       <div class="grid2">
         <div class="card">
@@ -405,6 +406,7 @@ html[data-theme="light"][data-wb="1"]{--bgGrad:#ffffff;}
           <div class="tc tc-c"><table><thead><tr><th>Faixa</th><th class="num">Invest.</th><th class="num">Conv.</th><th class="num">Custo/conv.</th></tr></thead><tbody id="tGAgeBody"></tbody></table></div>
         </div>
       </div>
+      </div><!-- /gPublicoSec -->
       <div class="muted-note">No Google, "conversão" usa a métrica <b>Conversions</b> (mesma do Looker) — diferente de "lead" do Meta. Por isso as duas não são somadas.</div>
     </div>
 
@@ -516,6 +518,14 @@ html[data-theme="light"][data-wb="1"]{--bgGrad:#ffffff;}
 
 <script>
 const D = /*__DATA__*/;
+/* breakdowns compactos [dia,camp,dim...,sp,ld] → objetos (economiza ~6MB no arquivo) */
+(function(){
+  const days=D.days||[], ags=D.agList||[], gs=['f','m','u'], pps=D.posList||[];
+  if(Array.isArray(D.demo)&&D.demo.length&&Array.isArray(D.demo[0]))
+    D.demo=D.demo.map(r=>({d:days[r[0]],ci:r[1],ag:ags[r[2]],g:gs[r[3]],sp:r[4],ld:r[5]}));
+  if(Array.isArray(D.pos)&&D.pos.length&&Array.isArray(D.pos[0]))
+    D.pos=D.pos.map(r=>({d:days[r[0]],ci:r[1],pp:pps[r[2]],sp:r[3],ld:r[4]}));
+})();
 const M = D.moeda || "R$";
 const INV = "#2BB673";   /* verde da linha de investimento — igual nos dois modos */
 if(window.ChartDataLabels){Chart.register(window.ChartDataLabels);}
@@ -577,8 +587,9 @@ const campMatch=c=>!state.camps||state.camps.has(c);
 const metaF=()=>D.meta.filter(r=>inRange(r.d)&&modalMatch(r.m)&&campMatch(r.c));
 const googleF=()=>D.google.filter(r=>inRange(r.d));
 const kwF=()=>D.keywords.filter(r=>inRange(r.d));
-const demoF=()=>D.demo.filter(r=>inRange(r.d)&&modalMatch(r.m));
-const posF=()=>(D.pos||[]).filter(r=>inRange(r.d)&&modalMatch(r.m));
+const CNAME=D.campsList||[], CMODAL=D.campsModal||[];
+const demoF=()=>D.demo.filter(r=>inRange(r.d)&&modalMatch(CMODAL[r.ci])&&campMatch(CNAME[r.ci]));
+const posF=()=>(D.pos||[]).filter(r=>inRange(r.d)&&modalMatch(CMODAL[r.ci])&&campMatch(CNAME[r.ci]));
 function sum(a,k){return a.reduce((s,b)=>s+(+b[k]||0),0);}
 function byDay(a,ks){const m={};a.forEach(r=>{(m[r.d]=m[r.d]||{});ks.forEach(k=>m[r.d][k]=(m[r.d][k]||0)+(+r[k]||0));});return Object.keys(m).sort().map(d=>({d,...m[d]}));}
 function weekKey(iso){const dt=new Date(iso+'T00:00:00');const dow=(dt.getDay()+6)%7;dt.setDate(dt.getDate()-dow);return dt.toISOString().slice(0,10);} /* segunda-feira da semana */
@@ -776,11 +787,10 @@ function renderCursos(){
 /* ============ PÚBLICO ============ */
 function renderPublico(){
   const p=P(),rows=demoF();
-  const dn=document.getElementById('demoNote');if(dn)dn.textContent=state.camps?'· não considera o filtro de campanhas':'';
-  const GEN={female:'Feminino',male:'Masculino',unknown:'Não inform.'};
+  const GEN={f:'Feminino',m:'Masculino',u:'Não inform.'};
   const gA={};rows.forEach(r=>{(gA[r.g]=gA[r.g]||{sp:0,ld:0});gA[r.g].sp+=r.sp;gA[r.g].ld+=r.ld;});
   const gList=Object.keys(gA).map(k=>({k,nm:GEN[k]||k,...gA[k],cpl:gA[k].ld?gA[k].sp/gA[k].ld:0})).sort((a,b)=>b.sp-a.sp);
-  const gColors={female:p.metaBar,male:p.gold,unknown:p.muted2};
+  const gColors={f:p.metaBar,m:p.gold,u:p.muted2};
   donut('chGen',gList.map(g=>g.nm),gList.map(g=>g.sp),gList.map(g=>gColors[g.k]||p.muted),v=>money(v));
   document.getElementById('tGenBody').innerHTML=gList.map(g=>`<tr><td>${g.nm}</td><td class="num">${money(g.sp)}</td><td class="num">${intf(g.ld)}</td><td class="num">${money(g.cpl)}</td></tr>`).join('')||'<tr><td colspan="4" class="empty">—</td></tr>';
 
@@ -798,7 +808,6 @@ const POSL={feed:'Feed',facebook_stories:'Stories (FB)',instagram_stories:'Stori
 const posLabel=s=>POSL[s]||String(s).replace(/_/g,' ').replace(/\b\w/g,c=>c.toUpperCase());
 function renderPos(){
   const p=P(),rows=posF();
-  const pn=document.getElementById('posNote');if(pn)pn.textContent=state.camps?'· não considera o filtro de campanhas':'';
   const agg={};rows.forEach(r=>{(agg[r.pp]=agg[r.pp]||{pp:r.pp,sp:0,ld:0});agg[r.pp].sp+=r.sp;agg[r.pp].ld+=r.ld;});
   const list=Object.values(agg).sort((a,b)=>b.sp-a.sp);
   const spT=list.reduce((s,a)=>s+a.sp,0);
@@ -850,6 +859,8 @@ function renderGoogle(){
 
   /* Perfil de Público (Google) — rede de pesquisa */
   const GD=D.gdemo||{gen:[],age:[]};
+  const gpSec=document.getElementById('gPublicoSec');
+  if(gpSec)gpSec.style.display=((GD.gen&&GD.gen.length)||(GD.age&&GD.age.length))?'':'none';
   const GLAB={FEMALE:'Feminino',MALE:'Masculino',UNDETERMINED:'Não inform.'};
   const gAgeLbl=s=>{s=String(s).replace('AGE_RANGE_','');if(s==='65_UP')return'65+';if(s==='UNDETERMINED')return'Não inform.';return s.replace('_','-');};
   const gagg=(rows,key)=>{const m={};rows.filter(r=>inRange(r.d)).forEach(r=>{(m[r[key]]=m[r[key]]||{sp:0,cv:0});m[r[key]].sp+=r.sp;m[r[key]].cv+=r.cv;});return m;};
