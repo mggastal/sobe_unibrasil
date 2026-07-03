@@ -102,6 +102,22 @@ body{font-family:'DM Sans',sans-serif;background:var(--bgGrad);background-attach
 .ctrl{display:flex;align-items:center;gap:5px;background:var(--surface2);border:1px solid var(--border);border-radius:8px;padding:5px 9px;font-size:11px;font-weight:600;color:var(--muted);cursor:pointer;font-family:'DM Sans';}
 .lbl-toggle.on{color:var(--accent);border-color:var(--accent);background:rgba(74,44,155,.08);}
 .ctrl.on{color:var(--accent);border-color:var(--accent);background:rgba(74,44,155,.08);}
+/* fundo branco: troca só o fundo do miolo, nada de cards/sidebar */
+html[data-theme="light"][data-wb="1"]{--bgGrad:#ffffff;}
+.wb-btn{display:none;white-space:nowrap;}
+@media(min-width:769px){.wb-btn{display:inline-flex;}}
+/* filtro de campanhas (Meta) */
+.camp-wrap{position:relative;display:flex;}
+.camp-wrap .ctrl{white-space:nowrap;}
+.camp-dd{position:absolute;top:calc(100% + 6px);left:0;z-index:600;background:var(--surface);border:1px solid var(--border);border-radius:10px;box-shadow:0 12px 30px rgba(10,16,50,.18);width:320px;max-height:340px;display:none;flex-direction:column;overflow:hidden;}
+.camp-dd.open{display:flex;}
+.camp-dd .camp-q{margin:8px 8px 4px;padding:6px 9px;border:1px solid var(--border);border-radius:7px;background:var(--surface2);color:var(--text);font-family:'DM Sans';font-size:11px;outline:none;}
+.camp-list-wrap{overflow-y:auto;padding:2px 6px 8px;}
+.camp-it{display:flex;align-items:center;gap:7px;padding:5px 7px;border-radius:6px;cursor:pointer;font-size:11px;color:var(--text);}
+.camp-it:hover{background:var(--surface2);}
+.camp-it input{accent-color:var(--accent);flex:none;}
+.camp-it .nm{white-space:nowrap;overflow:hidden;text-overflow:ellipsis;flex:1;min-width:0;}
+.camp-all{border-bottom:1px solid var(--border);margin-bottom:4px;padding-bottom:8px;font-weight:700;}
 .fontslider{display:flex;align-items:center;gap:5px;background:var(--surface2);border:1px solid var(--border);border-radius:8px;padding:4px 9px;}
 .fontslider span{font-size:9px;color:var(--muted2);font-weight:700;}
 .fontslider input{width:54px;height:3px;accent-color:var(--accent);cursor:pointer;}
@@ -258,6 +274,16 @@ body{font-family:'DM Sans',sans-serif;background:var(--bgGrad);background-attach
       <div class="tb-title" id="pageTitle">Meta Ads · Visão Geral</div>
     </div>
     <div class="tb-r">
+      <div class="camp-wrap" id="campWrap">
+        <button class="ctrl" id="campBtn" onclick="toggleCampDd()">Campanhas <span id="campCount"></span> <span style="font-size:8px">▼</span></button>
+        <div class="camp-dd" id="campDd">
+          <input type="text" class="camp-q" id="campSearch" placeholder="Buscar campanha…" oninput="filterCampList(this.value)">
+          <div class="camp-list-wrap">
+            <label class="camp-it camp-all"><input type="checkbox" id="campAll" checked onchange="campAllChange(this)"><span class="nm">Todas as campanhas</span></label>
+            <div id="campList"></div>
+          </div>
+        </div>
+      </div>
       <div class="seg-pill modal-pill" id="modalPill">
         <button class="pb active" data-m="todos" onclick="setModal('todos',this)">Todos</button>
         <button class="pb" data-m="PRESENCIAL" onclick="setModal('PRESENCIAL',this)">Presencial</button>
@@ -273,6 +299,7 @@ body{font-family:'DM Sans',sans-serif;background:var(--bgGrad);background-attach
       <div class="date-range" id="dateRange"><input type="date" id="dtI"><span>→</span><input type="date" id="dtF"><button class="dr-clear" onclick="clearDates()">✕</button></div>
       <div class="ctrl lbl-toggle on" id="lblToggle" onclick="toggleLabels()">Rótulos</div>
       <div class="fontslider"><span>Aa</span><input type="range" id="fontSlider" min="7" max="16" value="10" oninput="setFont(this.value)"></div>
+      <button class="ctrl wb-btn" id="wbBtn" onclick="toggleWb()" title="Fundo branco liso (sem gradiente)">▢ Fundo branco</button>
       <button class="ctrl" onclick="toggleTheme()"><span id="thIcon">🌙</span><span id="thLbl">Escuro</span></button>
     </div>
   </div>
@@ -311,7 +338,7 @@ body{font-family:'DM Sans',sans-serif;background:var(--bgGrad);background-attach
         </tr></thead><tbody id="tCampsBody"></tbody>
       </table></div>
 
-      <div class="sec-h" style="margin-top:22px">Perfil de Público</div>
+      <div class="sec-h" style="margin-top:22px">Perfil de Público <span class="expand" id="demoNote"></span></div>
       <div class="grid2">
         <div class="card">
           <div class="card-hd"><div><div class="card-t">Público por Gênero</div><div class="card-s">Investimento, leads e CPL</div></div></div>
@@ -473,7 +500,7 @@ const D = {"cliente": "UniBrasil Centro Universitário", "moeda": "R$", "gerado_
 const M = D.moeda || "R$";
 const INV = "#2BB673";   /* verde da linha de investimento — igual nos dois modos */
 if(window.ChartDataLabels){Chart.register(window.ChartDataLabels);}
-let state={modal:'todos',period:30,dtI:null,dtF:null,labels:true,font:10,metaView:'dia'};
+let state={modal:'todos',period:30,dtI:null,dtF:null,labels:true,font:10,metaView:'dia',camps:null}; /* camps: null = todas; Set = selecionadas */
 
 const fmt=(n,d=0)=>Number(n||0).toLocaleString('pt-BR',{minimumFractionDigits:d,maximumFractionDigits:d});
 const money=n=>M+" "+fmt(Math.round(+n||0));
@@ -527,7 +554,8 @@ function delta(atual,anterior,inverso){
   const arw = v>0.5 ? '▲' : (v<-0.5 ? '▼' : '■');
   return `<span class="dlt ${cls}">${arw} ${fmt(Math.abs(v),0)}%</span> vs período anterior`;
 }
-const metaF=()=>D.meta.filter(r=>inRange(r.d)&&modalMatch(r.m));
+const campMatch=c=>!state.camps||state.camps.has(c);
+const metaF=()=>D.meta.filter(r=>inRange(r.d)&&modalMatch(r.m)&&campMatch(r.c));
 const googleF=()=>D.google.filter(r=>inRange(r.d));
 const kwF=()=>D.keywords.filter(r=>inRange(r.d));
 const demoF=()=>D.demo.filter(r=>inRange(r.d)&&modalMatch(r.m));
@@ -571,7 +599,7 @@ function renderMeta(){
   const cpl=ld?sp/ld:0,ctr=im?ck/im*100:0;
   // período anterior (mesma duração) para variação
   const fAnt=periodoAnterior();
-  const pr = fAnt ? D.meta.filter(r=>fAnt(r.d)&&modalMatch(r.m)) : null;
+  const pr = fAnt ? D.meta.filter(r=>fAnt(r.d)&&modalMatch(r.m)&&campMatch(r.c)) : null;
   const aSp=pr?sum(pr,'sp'):null, aLd=pr?sum(pr,'ld'):null, aIm=pr?sum(pr,'im'):null, aCk=pr?sum(pr,'ck'):null;
   const aCpl=pr?(aLd?aSp/aLd:0):null, aCtr=pr?(aIm?aCk/aIm*100:0):null;
   const pres=rows.filter(r=>r.m==='PRESENCIAL'),ead=rows.filter(r=>r.m==='EAD'||r.m==='SEMI'),semi=rows.filter(r=>r.m==='SEMI');
@@ -726,6 +754,7 @@ function renderCursos(){
 /* ============ PÚBLICO ============ */
 function renderPublico(){
   const p=P(),rows=demoF();
+  const dn=document.getElementById('demoNote');if(dn)dn.textContent=state.camps?'· não considera o filtro de campanhas':'';
   const GEN={female:'Feminino',male:'Masculino',unknown:'Não inform.'};
   const gA={};rows.forEach(r=>{(gA[r.g]=gA[r.g]||{sp:0,ld:0});gA[r.g].sp+=r.sp;gA[r.g].ld+=r.ld;});
   const gList=Object.keys(gA).map(k=>({k,nm:GEN[k]||k,...gA[k],cpl:gA[k].ld?gA[k].sp/gA[k].ld:0})).sort((a,b)=>b.sp-a.sp);
@@ -790,7 +819,7 @@ function miniBar(id,labels,data,color,fmtv){
       scales:{x:{grid:{display:false},ticks:{color:p.muted,font:{size:9}}},y:{grace:'14%',grid:{color:p.border},ticks:{color:p.muted,font:{size:9}}}}}});
 }
 function renderHistMeta(){
-  const p=P(),m=byMonth(D.meta,['sp','ld','im','ck']);
+  const p=P(),m=byMonth(D.meta.filter(r=>campMatch(r.c)),['sp','ld','im','ck']);
   const labels=m.map(x=>mlabel(x.ym));
   const sp=sum(m,'sp'),ld=sum(m,'ld'),im=sum(m,'im'),ck=sum(m,'ck');
   document.getElementById('hmKpis').innerHTML=
@@ -973,6 +1002,8 @@ function goPage(pg,el){
   const noModal=(pg==='google'||pg==='histgoogle'||pg==='histmeta'||consol);
   document.getElementById('modalPill').style.opacity=noModal?'.4':'1';
   document.getElementById('modalPill').style.pointerEvents=noModal?'none':'auto';
+  const metaPg=(pg==='meta'||pg==='criativos'||pg==='cursos'||pg==='histmeta');
+  document.getElementById('campWrap').style.display=metaPg?'':'none';
   const fixoAno=(pg==='ano2025'||pg==='ano2024'||pg==='resumo');
   document.getElementById('periodPill').style.display=fixoAno?'none':'flex';
   document.getElementById('dateRange').style.display=fixoAno?'none':'flex';
@@ -986,6 +1017,45 @@ document.getElementById('dtI').addEventListener('change',e=>{state.dtI=e.target.
 document.getElementById('dtF').addEventListener('change',e=>{state.dtF=e.target.value||null;document.querySelectorAll('#periodPill .pb').forEach(b=>b.classList.remove('active'));renderAll();});
 function toggleLabels(){state.labels=!state.labels;document.getElementById('lblToggle').classList.toggle('on',state.labels);renderAll();}
 function setMetaView(v,el){state.metaView=v;document.querySelectorAll('#metaViewPill .pb').forEach(b=>b.classList.remove('active'));el.classList.add('active');renderMeta();}
+
+/* ===== filtro de campanhas (Meta) ===== */
+let CAMPS=[];
+function buildCampFilter(){
+  const tot={};D.meta.forEach(r=>{tot[r.c]=(tot[r.c]||0)+r.sp;});
+  /* ativas primeiro (dot verde), depois pausadas; dentro de cada grupo, maior investimento primeiro */
+  CAMPS=Object.keys(tot).sort((a,b)=>{const sa=campStatus(a)?1:0,sb=campStatus(b)?1:0;if(sa!==sb)return sb-sa;return tot[b]-tot[a];});
+  document.getElementById('campList').innerHTML=CAMPS.map((c,i)=>
+    `<label class="camp-it"><input type="checkbox" data-i="${i}" onchange="campItemChange()"><span class="status-dot ${campStatus(c)?'active':'paused'}"></span><span class="nm" title="${c.replace(/"/g,'&quot;')}">${c}</span></label>`).join('');
+}
+function toggleCampDd(){document.getElementById('campDd').classList.toggle('open');}
+document.addEventListener('click',e=>{const w=document.getElementById('campWrap');if(w&&!w.contains(e.target))document.getElementById('campDd').classList.remove('open');});
+function campItemChange(){
+  const boxes=[...document.querySelectorAll('#campList input')];
+  const sel=boxes.filter(b=>b.checked).map(b=>CAMPS[+b.dataset.i]);
+  const all=document.getElementById('campAll');
+  if(sel.length===0){state.camps=null;all.checked=true;}
+  else{state.camps=new Set(sel);all.checked=false;}
+  updateCampBtn();updateBanner();renderAll();
+}
+function campAllChange(el){
+  if(el.checked){document.querySelectorAll('#campList input').forEach(b=>b.checked=false);state.camps=null;}
+  else{el.checked=true;return;} /* "Todas" não desmarca sozinha — desmarque campanhas individuais */
+  updateCampBtn();updateBanner();renderAll();
+}
+function updateCampBtn(){
+  const n=state.camps?state.camps.size:0;
+  document.getElementById('campCount').textContent=n?`(${n})`:'';
+  document.getElementById('campBtn').classList.toggle('on',!!n);
+}
+function filterCampList(q){q=(q||'').toLowerCase();document.querySelectorAll('#campList .camp-it').forEach(it=>{it.style.display=it.textContent.toLowerCase().includes(q)?'':'none';});}
+
+/* ===== fundo branco (mesma opção dos outros dashboards) ===== */
+function toggleWb(){
+  const on=document.documentElement.getAttribute('data-wb')==='1';
+  document.documentElement.setAttribute('data-wb',on?'0':'1');
+  document.getElementById('wbBtn').classList.toggle('on',!on);
+  try{localStorage.setItem('ub-wb',on?'0':'1');}catch(e){}
+}
 function setFont(v){state.font=+v;renderAll();}
 function updateBanner(){
   const tag=document.getElementById('modalTag'),desc=document.getElementById('modalDesc');
@@ -993,19 +1063,26 @@ function updateBanner(){
     PRESENCIAL:['tag-pres','Presencial','Apenas campanhas presenciais.'],
     EAD:['tag-ead','EAD (+Semi)','EAD consolidado com Semipresencial.'],
     SEMI:['tag-semi','Semipresencial','Apenas campanhas Semi, isoladas do EAD.']};
-  const[c,t,d]=map[state.modal];tag.className='tag '+c;tag.textContent=t;desc.textContent=d;
+  const[c,t,d]=map[state.modal];tag.className='tag '+c;tag.textContent=t;
+  desc.textContent=d+(state.camps?` Filtro ativo: ${state.camps.size} campanha${state.camps.size>1?'s':''} (Meta).`:'');
 }
 function toggleTheme(){
   const dark=document.documentElement.getAttribute('data-theme')==='dark';
   document.documentElement.setAttribute('data-theme',dark?'light':'dark');
   document.getElementById('thIcon').textContent=dark?'🌙':'☀️';
   document.getElementById('thLbl').textContent=dark?'Escuro':'Claro';
+  try{localStorage.setItem('ub-theme',dark?'light':'dark');}catch(e){}
   renderAll();
 }
 document.getElementById('dtI').min=D.dmin;document.getElementById('dtI').max=D.dmax;
 document.getElementById('dtF').min=D.dmin;document.getElementById('dtF').max=D.dmax;
 document.getElementById('sbData').textContent=(()=>{const[y,m,d]=D.dmax.split('-');return `${d}/${m}/${y}`;})();
 window.addEventListener('resize',()=>{Object.values(charts).forEach(c=>c.resize());});
+try{
+  if(localStorage.getItem('ub-theme')==='dark'){document.documentElement.setAttribute('data-theme','dark');document.getElementById('thIcon').textContent='☀️';document.getElementById('thLbl').textContent='Claro';}
+  if(localStorage.getItem('ub-wb')==='1'){document.documentElement.setAttribute('data-wb','1');document.getElementById('wbBtn').classList.add('on');}
+}catch(e){}
+buildCampFilter();
 updateBanner();renderAll();
 </script>
 </body>
