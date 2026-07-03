@@ -29,6 +29,15 @@ XLSX_FILE   = "_UNIBRASIL_V2__PLANILHA_BASE_PARA_DASHBOARD.xlsx"
 USAR_SHEETS = True
 SHEET_ID    = "1SeR6m6p_KQ9NHPgOKfUbQc3zmxqYTFVZe4EJg03xgI4"
 
+# ── Filtro de campanhas por nome (aplicado a TODAS as abas) ──
+# Dois dashboards saem da MESMA planilha só trocando estas duas linhas:
+#   • UniBrasil geral: EXCLUIR = ["MESTRADO", "DOUTORADO"]  /  APENAS = []
+#   • Mestrado/Doutorado: EXCLUIR = []  /  APENAS = ["MESTRADO", "DOUTORADO"]
+# A regra é por substring, sem acento/caixa. Se uma campanha casar em APENAS (quando
+# a lista não é vazia) ela entra; se casar em EXCLUIR ela sai. APENAS tem precedência.
+CAMP_EXCLUIR = ["MESTRADO", "DOUTORADO"]
+CAMP_APENAS  = []
+
 ABAS = {
     "meta": "meta-ads",
     "g_pesquisa": "google-ads-pesquisa",
@@ -64,6 +73,20 @@ CURSO_MAP = {
 }
 
 # ───────────────────────── HELPERS ─────────────────────────
+def _passa_campanha(nome):
+    u = str(nome).upper()
+    if CAMP_APENAS:
+        return any(t.upper() in u for t in CAMP_APENAS)
+    if CAMP_EXCLUIR:
+        return not any(t.upper() in u for t in CAMP_EXCLUIR)
+    return True
+
+def _filtra_campanhas(df):
+    """Remove linhas de campanhas fora do escopo (todas as abas têm 'Campaign Name')."""
+    if "Campaign Name" in df.columns and (CAMP_APENAS or CAMP_EXCLUIR):
+        return df[df["Campaign Name"].apply(_passa_campanha)].copy()
+    return df
+
 def carregar(key):
     aba = ABAS[key]
     if USAR_SHEETS:
@@ -71,8 +94,10 @@ def carregar(key):
         # gviz/tq lê a aba pelo nome; encodamos o nome para suportar acentos/espaços
         url = (f"https://docs.google.com/spreadsheets/d/{SHEET_ID}"
                f"/gviz/tq?tqx=out:csv&headers=1&sheet={quote(aba)}")
-        return pd.read_csv(url, dtype=str)  # tudo como texto; num() converte depois
-    return pd.read_excel(XLSX_FILE, sheet_name=aba)
+        df = pd.read_csv(url, dtype=str)  # tudo como texto; num() converte depois
+    else:
+        df = pd.read_excel(XLSX_FILE, sheet_name=aba)
+    return _filtra_campanhas(df)
 
 def num(s):
     if pd.api.types.is_numeric_dtype(s):
@@ -351,7 +376,13 @@ meta_2025 = build_meta_ano(carregar("meta_2025"))
 g2024_rows, g2024_kw = build_google_ano("g_2024_search", "g_2024_outros")
 g2025_rows, g2025_kw = build_google_ano("g_2025_search", "g_2025_outros")
 
-# ───────────────────────── DEMOGRAFIA (diária) ─────────────────────────
+# ───────────────────────── ÍNDICE DE CAMPANHAS ─────────────────────────
+# Breakdowns (demo/posicionamento) referenciam campanhas por índice (ci) para não
+# repetir o nome em dezenas de milhares de linhas — assim respondem ao filtro de
+# campanhas sem inflar o arquivo.
+_camps_meta = sorted({r["c"] for r in meta_rows})
+
+# ───────────────────────── DEMOGRAFIA (diária, por campanha) ─────────────────────────
 ga = carregar("bk_genage")
 ga["Date"] = parse_data(ga["Date"])
 ga = ga[ga["Date"].notna()].copy()
@@ -359,14 +390,13 @@ ga["sp"] = num(ga["Spend (Cost, Amount Spent)"])
 ga["ld"] = leads_meta(ga)
 ga["modal"] = ga["Campaign Name"].apply(modalidade)
 ga["ag"] = ga["Age (Breakdown)"].astype(str)
-ga["g"] = ga["Gender (Breakdown)"].astype(str)
+ga["g"] = ga["Gender (Breakdown)"].astype(str).map({"female": "f", "male": "m"}).fillna("u")
 ga = ga[ga["modal"].isin(["PRESENCIAL", "EAD", "SEMI"])].copy()
 ga["dstr"] = ga["Date"].dt.strftime("%Y-%m-%d")
-demo_agg = ga.groupby(["dstr", "modal", "ag", "g"], as_index=False).agg(sp=("sp", "sum"), ld=("ld", "sum"))
-demo_rows = [{"d": r["dstr"], "m": r["modal"], "ag": r["ag"], "g": r["g"],
-              "sp": r2(r["sp"]), "ld": int(r["ld"])} for _, r in demo_agg.iterrows()]
+ga["c"] = ga["Campaign Name"].astype(str)
+demo_agg = ga.groupby(["dstr", "c", "ag", "g"], as_index=False).agg(sp=("sp", "sum"), ld=("ld", "sum"))
 
-# ───────────────────────── POSICIONAMENTO (Meta, diário) ─────────────────────────
+# ───────────────────────── POSICIONAMENTO (diário, por campanha) ─────────────────────────
 pt = carregar("bk_platform")
 pt["Date"] = parse_data(pt["Date"])
 pt = pt[pt["Date"].notna()].copy()
@@ -375,10 +405,28 @@ pt["ld"] = leads_meta(pt)
 pt["modal"] = pt["Campaign Name"].apply(modalidade)
 pt = pt[pt["modal"].isin(["PRESENCIAL", "EAD", "SEMI"])].copy()
 pt["dstr"] = pt["Date"].dt.strftime("%Y-%m-%d")
+pt["c"] = pt["Campaign Name"].astype(str)
 pt["pp"] = pt["Platform Position (Breakdown)"].astype(str)
-pos_agg = pt.groupby(["dstr", "modal", "pp"], as_index=False).agg(sp=("sp", "sum"), ld=("ld", "sum"))
-pos_rows = [{"d": r["dstr"], "m": r["modal"], "pp": r["pp"],
-             "sp": r2(r["sp"]), "ld": int(r["ld"])} for _, r in pos_agg.iterrows()]
+pos_agg = pt.groupby(["dstr", "c", "pp"], as_index=False).agg(sp=("sp", "sum"), ld=("ld", "sum"))
+
+# índice final = campanhas do meta-ads + qualquer extra que só apareça nos breakdowns
+CAMPS_LIST = sorted(set(_camps_meta) | set(demo_agg["c"]) | set(pos_agg["c"]))
+CAMPS_IDX = {c: i for i, c in enumerate(CAMPS_LIST)}
+CAMPS_MODAL = [modalidade(c) for c in CAMPS_LIST]
+
+# ── formato compacto: linhas viram arrays [dia, campanha, dim..., sp, ld] com índices ──
+DAYS_LIST = sorted(set(demo_agg["dstr"]) | set(pos_agg["dstr"]))
+DAYS_IDX = {d: i for i, d in enumerate(DAYS_LIST)}
+AG_LIST = sorted(demo_agg["ag"].unique())
+AG_IDX = {a: i for i, a in enumerate(AG_LIST)}
+G_IDX = {"f": 0, "m": 1, "u": 2}
+POS_LIST = sorted(pos_agg["pp"].unique())
+POS_IDX = {p: i for i, p in enumerate(POS_LIST)}
+
+demo_rows = [[DAYS_IDX[r["dstr"]], CAMPS_IDX[r["c"]], AG_IDX[r["ag"]], G_IDX[r["g"]],
+              r2(r["sp"]), int(r["ld"])] for _, r in demo_agg.iterrows()]
+pos_rows = [[DAYS_IDX[r["dstr"]], CAMPS_IDX[r["c"]], POS_IDX[r["pp"]],
+             r2(r["sp"]), int(r["ld"])] for _, r in pos_agg.iterrows()]
 
 # ───────────────────────── DEMOGRAFIA GOOGLE (diária) ─────────────────────────
 def build_gdemo(key, col, out_key):
@@ -395,6 +443,12 @@ def build_gdemo(key, col, out_key):
 gdemo_gen = build_gdemo("g_bd_gender", "Gender (Ad Group Criterion)", "g")
 gdemo_age = build_gdemo("g_bd_age", "Age (Ad Group Criterion)", "ag")
 
+# As abas de demografia do Google não têm coluna de campanha — não dá para filtrá-las
+# por nome. Se este dashboard usa um recorte de campanhas (APENAS/EXCLUIR ativo com
+# poucas campanhas), zeramos para não misturar dados de fora do escopo.
+if CAMP_APENAS:
+    gdemo_gen, gdemo_age = [], []
+
 # ───────────────────────── PAYLOAD ─────────────────────────
 all_dates = [x["d"] for x in meta_rows] + [x["d"] for x in google_rows]
 D = {
@@ -402,6 +456,8 @@ D = {
     "dmin": min(all_dates), "dmax": max(all_dates),
     "meta": meta_rows, "google": google_rows, "demo": demo_rows,
     "pos": pos_rows, "gdemo": {"gen": gdemo_gen, "age": gdemo_age},
+    "campsList": CAMPS_LIST, "campsModal": CAMPS_MODAL,
+    "days": DAYS_LIST, "agList": AG_LIST, "posList": POS_LIST,
     "keywords": keyword_rows, "thumbs": thumbs, "status": status,
     "anos": {
         "2024": {"meta": meta_2024, "google": g2024_rows, "keywords": g2024_kw},
