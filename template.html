@@ -104,7 +104,7 @@ body{font-family:'DM Sans',sans-serif;background:var(--bgGrad);background-attach
 .ctrl.on{color:var(--accent);border-color:var(--accent);background:rgba(74,44,155,.08);}
 /* fundo branco: troca só o fundo do miolo, nada de cards/sidebar */
 html[data-theme="light"][data-wb="1"]{--bgGrad:#ffffff;}
-.wb-btn{display:none;white-space:nowrap;}
+.wb-btn{display:none;white-space:nowrap;padding:4px 8px;font-size:13px;line-height:1;}
 @media(min-width:769px){.wb-btn{display:inline-flex;}}
 /* filtro de campanhas (Meta) */
 .camp-wrap{position:relative;display:flex;}
@@ -299,7 +299,7 @@ html[data-theme="light"][data-wb="1"]{--bgGrad:#ffffff;}
       <div class="date-range" id="dateRange"><input type="date" id="dtI"><span>→</span><input type="date" id="dtF"><button class="dr-clear" onclick="clearDates()">✕</button></div>
       <div class="ctrl lbl-toggle on" id="lblToggle" onclick="toggleLabels()">Rótulos</div>
       <div class="fontslider"><span>Aa</span><input type="range" id="fontSlider" min="7" max="16" value="10" oninput="setFont(this.value)"></div>
-      <button class="ctrl wb-btn" id="wbBtn" onclick="toggleWb()" title="Fundo branco liso (sem gradiente)">▢ Fundo branco</button>
+      <button class="ctrl wb-btn" id="wbBtn" onclick="toggleWb()" title="Fundo branco">💡</button>
       <button class="ctrl" onclick="toggleTheme()"><span id="thIcon">🌙</span><span id="thLbl">Escuro</span></button>
     </div>
   </div>
@@ -351,6 +351,12 @@ html[data-theme="light"][data-wb="1"]{--bgGrad:#ffffff;}
           <div class="tc tc-c"><table><thead><tr><th>Faixa</th><th class="num">Invest.</th><th class="num">Leads</th><th class="num">CPL</th></tr></thead><tbody id="tAgeBody"></tbody></table></div>
         </div>
       </div>
+      <div class="sec-h" style="margin-top:22px">Posicionamento <span class="expand" id="posNote"></span></div>
+      <div class="card">
+        <div class="card-hd"><div><div class="card-t">Leads por Posicionamento</div><div class="card-s">Onde os anúncios rodam — Feed, Stories, Reels…</div></div></div>
+        <div class="cw" style="height:230px"><canvas id="chPos"></canvas></div>
+        <div class="tc tc-c" style="margin-top:12px"><table><thead><tr><th>Posição</th><th class="num">Invest.</th><th class="num">% Invest.</th><th class="num">Leads</th><th class="num">CPL</th></tr></thead><tbody id="tPosBody"></tbody></table></div>
+      </div>
     </div>
 
     <!-- CRIATIVOS -->
@@ -386,6 +392,19 @@ html[data-theme="light"][data-wb="1"]{--bgGrad:#ffffff;}
       <div class="tc"><table><thead><tr><th>Campanha</th><th>Canal</th><th class="num">Invest.</th><th class="num">Conversões</th><th class="num">Custo/conv</th><th class="num">Cliques</th></tr></thead><tbody id="gCampsBody"></tbody></table></div>
       <div class="sec-h" style="margin-top:22px">Top Palavras-chave</div>
       <div class="tc"><table><thead><tr><th>#</th><th>Palavra-chave</th><th class="num">Invest.</th><th class="num">Conversões</th><th class="num">Custo/conv.</th><th class="num">Cliques</th><th class="num">CTR</th><th class="num">CPC</th></tr></thead><tbody id="gKwBody"></tbody></table></div>
+      <div class="sec-h" style="margin-top:22px">Perfil de Público (Google)</div>
+      <div class="grid2">
+        <div class="card">
+          <div class="card-hd"><div><div class="card-t">Conversões por Gênero</div><div class="card-s">Investimento, conversões e custo/conv. (rede de pesquisa)</div></div></div>
+          <div class="cw" style="height:210px;margin-bottom:12px"><canvas id="chGGen"></canvas></div>
+          <div class="tc tc-c"><table><thead><tr><th>Gênero</th><th class="num">Invest.</th><th class="num">Conv.</th><th class="num">Custo/conv.</th></tr></thead><tbody id="tGGenBody"></tbody></table></div>
+        </div>
+        <div class="card">
+          <div class="card-hd"><div><div class="card-t">Conversões por Faixa Etária</div><div class="card-s">Investimento, conversões e custo/conv. (rede de pesquisa)</div></div></div>
+          <div class="cw" style="height:210px;margin-bottom:12px"><canvas id="chGAge"></canvas></div>
+          <div class="tc tc-c"><table><thead><tr><th>Faixa</th><th class="num">Invest.</th><th class="num">Conv.</th><th class="num">Custo/conv.</th></tr></thead><tbody id="tGAgeBody"></tbody></table></div>
+        </div>
+      </div>
       <div class="muted-note">No Google, "conversão" usa a métrica <b>Conversions</b> (mesma do Looker) — diferente de "lead" do Meta. Por isso as duas não são somadas.</div>
     </div>
 
@@ -559,6 +578,7 @@ const metaF=()=>D.meta.filter(r=>inRange(r.d)&&modalMatch(r.m)&&campMatch(r.c));
 const googleF=()=>D.google.filter(r=>inRange(r.d));
 const kwF=()=>D.keywords.filter(r=>inRange(r.d));
 const demoF=()=>D.demo.filter(r=>inRange(r.d)&&modalMatch(r.m));
+const posF=()=>(D.pos||[]).filter(r=>inRange(r.d)&&modalMatch(r.m));
 function sum(a,k){return a.reduce((s,b)=>s+(+b[k]||0),0);}
 function byDay(a,ks){const m={};a.forEach(r=>{(m[r.d]=m[r.d]||{});ks.forEach(k=>m[r.d][k]=(m[r.d][k]||0)+(+r[k]||0));});return Object.keys(m).sort().map(d=>({d,...m[d]}));}
 function weekKey(iso){const dt=new Date(iso+'T00:00:00');const dow=(dt.getDay()+6)%7;dt.setDate(dt.getDate()-dow);return dt.toISOString().slice(0,10);} /* segunda-feira da semana */
@@ -674,6 +694,7 @@ function renderMeta(){
 
   renderCamps(rows);
   renderPublico();
+  renderPos();
 }
 function modalBadge(a){return a.m==='PRESENCIAL'?'<span class="badge b-pres">Presencial</span>':a.m==='SEMI'?'<span class="badge b-semi">Semi</span>':'<span class="badge b-ead">EAD</span>';}
 function campStatus(c){return Object.keys(D.status).some(k=>k.startsWith(c+'||')&&D.status[k]==='ACTIVE');}
@@ -692,7 +713,7 @@ document.querySelectorAll('#tCamps thead th[data-k]').forEach(th=>th.addEventLis
 
 function adsOf(rows){
   const agg={};
-  rows.forEach(r=>{const k=r.c+'||'+r.ad;(agg[k]=agg[k]||{key:k,ad:r.ad,c:r.c,m:r.m,br:r.br,sp:0,ld:0,im:0,ck:0});const a=agg[k];a.sp+=r.sp;a.ld+=r.ld;a.im+=r.im;a.ck+=r.ck;});
+  rows.forEach(r=>{const k=r.c+'||'+r.ad;(agg[k]=agg[k]||{key:k,ad:r.ad,c:r.c,m:r.m,br:r.br,sp:0,ld:0,im:0,ck:0,tp:0});const a=agg[k];a.sp+=r.sp;a.ld+=r.ld;a.im+=r.im;a.ck+=r.ck;a.tp+=(r.tp||0);});
   return Object.values(agg).map(a=>({...a,th:D.thumbs[a.key]||'',st:D.status[a.key]||'',cpl:a.ld?a.sp/a.ld:0,ctr:a.im?a.ck/a.im*100:0}));
 }
 function adCard(a,i){
@@ -705,7 +726,8 @@ function adCard(a,i){
     <div class="ad-body"><div class="ad-nm" title="${a.ad}"><span class="status-dot ${a.st==='ACTIVE'?'active':'paused'}"></span>${a.ad||'—'}</div>
       <div class="ad-mt"><div><div class="lbl">Leads</div><div class="v">${intf(a.ld)}</div></div>
         <div><div class="lbl">CPL</div><div class="v">${money(a.cpl)}</div></div>
-        <div><div class="lbl">CTR</div><div class="v">${fmt(a.ctr,2)}%</div></div></div></div></div>`;
+        <div><div class="lbl">CTR</div><div class="v">${fmt(a.ctr,2)}%</div></div>${a.tp>0?`
+        <div><div class="lbl">ThruPlay</div><div class="v">${intf(a.tp)}</div></div>`:''}</div></div></div>`;
 }
 function openCamp(c){
   const rows=metaF().filter(r=>r.c===c);
@@ -771,6 +793,27 @@ function renderPublico(){
   document.getElementById('tAgeBody').innerHTML=ageOrder.map(a=>{const o=aA[a]||{sp:0,ld:0};const cpl=o.ld?o.sp/o.ld:0;return `<tr><td>${a}</td><td class="num">${money(o.sp)}</td><td class="num">${intf(o.ld)}</td><td class="num">${money(cpl)}</td></tr>`;}).join('');
 }
 
+/* ============ POSICIONAMENTO (Meta) ============ */
+const POSL={feed:'Feed',facebook_stories:'Stories (FB)',instagram_stories:'Stories (IG)',instagram_reels:'Reels (IG)',facebook_reels:'Reels (FB)',facebook_reels_overlay:'Reels Overlay (FB)',instagram_explore:'Explore (IG)',instagram_explore_grid_home:'Explore Grid (IG)',instagram_search:'Busca (IG)',instream_video:'Vídeo In-Stream',marketplace:'Marketplace',an_classic:'Audience Network',biz_disco_feed:'Disco Feed',facebook_notification:'Notificações (FB)',facebook_profile_feed:'Feed de Perfil (FB)',search:'Busca (FB)',right_hand_column:'Coluna Direita',video_feeds:'Video Feeds',unknown:'Desconhecido'};
+const posLabel=s=>POSL[s]||String(s).replace(/_/g,' ').replace(/\b\w/g,c=>c.toUpperCase());
+function renderPos(){
+  const p=P(),rows=posF();
+  const pn=document.getElementById('posNote');if(pn)pn.textContent=state.camps?'· não considera o filtro de campanhas':'';
+  const agg={};rows.forEach(r=>{(agg[r.pp]=agg[r.pp]||{pp:r.pp,sp:0,ld:0});agg[r.pp].sp+=r.sp;agg[r.pp].ld+=r.ld;});
+  const list=Object.values(agg).sort((a,b)=>b.sp-a.sp);
+  const spT=list.reduce((s,a)=>s+a.sp,0);
+  const top=list.slice(0,8);
+  draw('chPos',{type:'bar',data:{labels:top.map(a=>posLabel(a.pp)),datasets:[{label:'Leads',data:top.map(a=>a.ld),backgroundColor:p.gold,borderRadius:5}]},
+    options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false},
+      datalabels:{display:lblDisplay(false),color:p.text,font:lblFont(),anchor:'end',align:'top',offset:1,formatter:v=>v>0?intf(v):''},
+      tooltip:{callbacks:{label:c=>'Leads: '+intf(c.raw)}}},
+      scales:{x:{grid:{display:false},ticks:{color:p.muted,font:{size:9},maxRotation:35,minRotation:0}},y:{grace:'14%',grid:{color:p.border},ticks:{color:p.muted}}}}});
+  document.getElementById('tPosBody').innerHTML=list.length?list.map(a=>{
+    const cpl=a.ld?a.sp/a.ld:0, pc=spT?a.sp/spT*100:0;
+    return `<tr><td>${posLabel(a.pp)}</td><td class="num">${money(a.sp)}</td><td class="num">${fmt(pc,1)}%</td><td class="num">${intf(a.ld)}</td><td class="num">${a.ld?money(cpl):'—'}</td></tr>`;
+  }).join(''):'<tr><td colspan="5" class="empty">Sem dados no período</td></tr>';
+}
+
 /* ============ GOOGLE ============ */
 function renderGoogle(){
   const p=P(),rows=googleF();
@@ -804,6 +847,26 @@ function renderGoogle(){
   const kagg={};kwF().forEach(r=>{(kagg[r.kw]=kagg[r.kw]||{kw:r.kw,sp:0,cv:0,ck:0,im:0});const a=kagg[r.kw];a.sp+=r.sp;a.cv+=r.cv;a.ck+=r.ck;a.im+=r.im;});
   const kl=Object.values(kagg).map(a=>({...a,ctr:a.im?a.ck/a.im*100:0,cpc:a.ck?a.sp/a.ck:0,cpconv:a.cv?a.sp/a.cv:0})).sort((a,b)=>b.sp-a.sp).slice(0,20);
   document.getElementById('gKwBody').innerHTML=kl.length?kl.map((a,i)=>`<tr><td><b>${i+1}</b></td><td>${a.kw}</td><td class="num">${money(a.sp)}</td><td class="num">${intf(a.cv)}</td><td class="num">${a.cv?money(a.cpconv):'—'}</td><td class="num">${intf(a.ck)}</td><td class="num">${fmt(a.ctr,2)}%</td><td class="num">${money(a.cpc)}</td></tr>`).join(''):'<tr><td colspan="8" class="empty">Sem palavras-chave no período</td></tr>';
+
+  /* Perfil de Público (Google) — rede de pesquisa */
+  const GD=D.gdemo||{gen:[],age:[]};
+  const GLAB={FEMALE:'Feminino',MALE:'Masculino',UNDETERMINED:'Não inform.'};
+  const gAgeLbl=s=>{s=String(s).replace('AGE_RANGE_','');if(s==='65_UP')return'65+';if(s==='UNDETERMINED')return'Não inform.';return s.replace('_','-');};
+  const gagg=(rows,key)=>{const m={};rows.filter(r=>inRange(r.d)).forEach(r=>{(m[r[key]]=m[r[key]]||{sp:0,cv:0});m[r[key]].sp+=r.sp;m[r[key]].cv+=r.cv;});return m;};
+  const gg=gagg(GD.gen,'g');
+  const genOrder=['FEMALE','MALE','UNDETERMINED'].filter(k=>gg[k]);
+  donut('chGGen',genOrder.map(k=>GLAB[k]),genOrder.map(k=>gg[k].cv),[p.metaBar,p.gold,p.muted2],v=>intf(v)+' conv.');
+  document.getElementById('tGGenBody').innerHTML=genOrder.length?genOrder.map(k=>{const o=gg[k];const cc=o.cv?o.sp/o.cv:0;
+    return `<tr><td>${GLAB[k]}</td><td class="num">${money(o.sp)}</td><td class="num">${intf(o.cv)}</td><td class="num">${o.cv?money(cc):'—'}</td></tr>`;}).join(''):'<tr><td colspan="4" class="empty">Sem dados</td></tr>';
+  const ga_=gagg(GD.age,'ag');
+  const ageOrd=['AGE_RANGE_18_24','AGE_RANGE_25_34','AGE_RANGE_35_44','AGE_RANGE_45_54','AGE_RANGE_55_64','AGE_RANGE_65_UP','AGE_RANGE_UNDETERMINED'].filter(k=>ga_[k]);
+  draw('chGAge',{type:'bar',data:{labels:ageOrd.map(gAgeLbl),datasets:[{label:'Conversões',data:ageOrd.map(k=>ga_[k].cv),backgroundColor:p.googleBar,borderRadius:5}]},
+    options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false},
+      datalabels:{display:lblDisplay(false),color:p.text,font:lblFont(),anchor:'end',align:'top',offset:1,formatter:v=>v>0?intf(v):''},
+      tooltip:{callbacks:{label:c=>'Conversões: '+intf(c.raw)}}},
+      scales:{x:{grid:{display:false},ticks:{color:p.muted}},y:{grace:'14%',grid:{color:p.border},ticks:{color:p.muted}}}}});
+  document.getElementById('tGAgeBody').innerHTML=ageOrd.length?ageOrd.map(k=>{const o=ga_[k];const cc=o.cv?o.sp/o.cv:0;
+    return `<tr><td>${gAgeLbl(k)}</td><td class="num">${money(o.sp)}</td><td class="num">${intf(o.cv)}</td><td class="num">${o.cv?money(cc):'—'}</td></tr>`;}).join(''):'<tr><td colspan="4" class="empty">Sem dados</td></tr>';
 }
 
 /* ============ HISTÓRICO MENSAL ============ */
