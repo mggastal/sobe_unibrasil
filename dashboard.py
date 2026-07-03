@@ -35,6 +35,9 @@ ABAS = {
     "g_outros": "google-ads-outros",
     "g_keywords": "google-ads",
     "bk_genage": "breakdown-gender-age",
+    "bk_platform": "breakdown-platform",
+    "g_bd_gender": "google-breakdown-gender",
+    "g_bd_age": "google-breakdown-age",
     # blocos anuais fixos
     "meta_2024": "meta-2024",
     "meta_2025": "meta-2025",
@@ -103,6 +106,10 @@ def r2(x):
     try: return round(float(x), 2)
     except Exception: return 0.0
 
+def numcol(df, name):
+    """num() de uma coluna que pode não existir na aba (retorna zeros se ausente)."""
+    return num(df[name]) if name in df.columns else pd.Series(0.0, index=df.index)
+
 def thumb(row):
     for col in ("Thumbnail URL", "Image URL"):
         v = row.get(col)
@@ -158,6 +165,7 @@ def build_meta(df):
     df["ld"] = leads_meta(df)
     df["im"] = num(df["Impressions"])
     df["ck"] = num(df["Clicks"])
+    df["tp"]  = numcol(df, "Video Thruplay Watched Actions")
     df["modal"] = df["Campaign Name"].apply(modalidade)
     df["curso"] = df["Campaign Name"].apply(curso)
     df = df[df["modal"].isin(["PRESENCIAL", "EAD", "SEMI"])].copy()
@@ -177,7 +185,7 @@ def build_meta(df):
             "m": r["modal"], "cu": r["curso"],
             "br": bool(is_branding(r["Campaign Name"])),
             "sp": r2(r["sp"]), "ld": int(r["ld"]),
-            "im": int(r["im"]), "ck": int(r["ck"]),
+            "im": int(r["im"]), "ck": int(r["ck"]), "tp": int(r["tp"]),
         })
     return rows, thumbs, status
 
@@ -358,12 +366,42 @@ demo_agg = ga.groupby(["dstr", "modal", "ag", "g"], as_index=False).agg(sp=("sp"
 demo_rows = [{"d": r["dstr"], "m": r["modal"], "ag": r["ag"], "g": r["g"],
               "sp": r2(r["sp"]), "ld": int(r["ld"])} for _, r in demo_agg.iterrows()]
 
+# ───────────────────────── POSICIONAMENTO (Meta, diário) ─────────────────────────
+pt = carregar("bk_platform")
+pt["Date"] = parse_data(pt["Date"])
+pt = pt[pt["Date"].notna()].copy()
+pt["sp"] = num(pt["Spend (Cost, Amount Spent)"])
+pt["ld"] = leads_meta(pt)
+pt["modal"] = pt["Campaign Name"].apply(modalidade)
+pt = pt[pt["modal"].isin(["PRESENCIAL", "EAD", "SEMI"])].copy()
+pt["dstr"] = pt["Date"].dt.strftime("%Y-%m-%d")
+pt["pp"] = pt["Platform Position (Breakdown)"].astype(str)
+pos_agg = pt.groupby(["dstr", "modal", "pp"], as_index=False).agg(sp=("sp", "sum"), ld=("ld", "sum"))
+pos_rows = [{"d": r["dstr"], "m": r["modal"], "pp": r["pp"],
+             "sp": r2(r["sp"]), "ld": int(r["ld"])} for _, r in pos_agg.iterrows()]
+
+# ───────────────────────── DEMOGRAFIA GOOGLE (diária) ─────────────────────────
+def build_gdemo(key, col, out_key):
+    df = carregar(key)
+    df["Date"] = parse_data(df["Date (Segment)"])
+    df = df[df["Date"].notna()].copy()
+    df["sp"] = num(df["Cost (Spend, Amount Spent)"])
+    df["cv"] = num(df[col_conv_google(df)])
+    df["dstr"] = df["Date"].dt.strftime("%Y-%m-%d")
+    df["k"] = df[col].astype(str)
+    agg = df.groupby(["dstr", "k"], as_index=False).agg(sp=("sp", "sum"), cv=("cv", "sum"))
+    return [{"d": r["dstr"], out_key: r["k"], "sp": r2(r["sp"]), "cv": r2(r["cv"])} for _, r in agg.iterrows()]
+
+gdemo_gen = build_gdemo("g_bd_gender", "Gender (Ad Group Criterion)", "g")
+gdemo_age = build_gdemo("g_bd_age", "Age (Ad Group Criterion)", "ag")
+
 # ───────────────────────── PAYLOAD ─────────────────────────
 all_dates = [x["d"] for x in meta_rows] + [x["d"] for x in google_rows]
 D = {
     "cliente": CLIENTE, "moeda": MOEDA, "gerado_em": date.today().strftime("%d/%m/%Y"),
     "dmin": min(all_dates), "dmax": max(all_dates),
     "meta": meta_rows, "google": google_rows, "demo": demo_rows,
+    "pos": pos_rows, "gdemo": {"gen": gdemo_gen, "age": gdemo_age},
     "keywords": keyword_rows, "thumbs": thumbs, "status": status,
     "anos": {
         "2024": {"meta": meta_2024, "google": g2024_rows, "keywords": g2024_kw},
@@ -371,7 +409,8 @@ D = {
     },
 }
 Path(DATA_FILE).write_text(json.dumps(D, ensure_ascii=False), encoding="utf-8")
-print(f"✓ {DATA_FILE}: {len(meta_rows)} linhas Meta, {len(google_rows)} Google, {len(demo_rows)} demo")
+print(f"✓ {DATA_FILE}: {len(meta_rows)} linhas Meta, {len(google_rows)} Google, {len(demo_rows)} demo, "
+      f"{len(pos_rows)} posicionamento, {len(gdemo_gen)+len(gdemo_age)} demo Google")
 print(f"  anuais → 2024: meta {len(meta_2024)}, google {len(g2024_rows)}, kw {len(g2024_kw)} | "
       f"2025: meta {len(meta_2025)}, google {len(g2025_rows)}, kw {len(g2025_kw)}")
 
