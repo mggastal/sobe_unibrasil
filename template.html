@@ -684,7 +684,7 @@ function renderMeta(){
     {type:'line',label:'CPL',data:cplArr,borderColor:p.cpl,borderDash:[5,3],yAxisID:'yC',tension:.3,pointRadius:dense?0:3,borderWidth:2,order:1},
   ]},options:{responsive:true,maintainAspectRatio:false,interaction:{mode:'index',intersect:false},
     plugins:{legend:{position:'bottom',labels:{color:p.muted,boxWidth:9,padding:10}},
-      datalabels:{display:lblDisplay(dense),color:p.text,font:lblFont(),anchor:'end',align:'top',offset:1,formatter:(v,ctx)=>{
+      datalabels:{display:lblDisplay(false),color:p.text,font:lblFont(),anchor:'end',align:'top',offset:1,formatter:(v,ctx)=>{
         if(ctx.dataset.type!=='bar')return '';
         if(state.modal==='todos'){
           if(ctx.dataset.label==='Leads EAD'){const t=(presData[ctx.dataIndex]||0)+(eadData[ctx.dataIndex]||0);return t>0?intf(t):'';}
