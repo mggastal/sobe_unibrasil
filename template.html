@@ -695,7 +695,7 @@ function renderMeta(){
       tooltip:{callbacks:{label:c=>c.dataset.type==='bar'?c.dataset.label+': '+intf(c.raw):c.dataset.label+': '+money(c.raw)}}},
     scales:{x:{stacked:true,grid:{display:false},ticks:{color:p.muted,font:{size:dense?8:9},maxRotation:0,autoSkip:true,maxTicksLimit:dense?12:13}},
       yL:{stacked:true,position:'left',grace:'12%',grid:{color:p.border},ticks:{color:p.muted,font:{size:9}},title:{display:true,text:'Leads',color:p.muted,font:{size:9}}},
-      yI:{position:'right',grid:{display:false},ticks:{color:p.muted,font:{size:9},callback:v=>money(v)}},
+      yI:{position:'right',beginAtZero:true,grid:{display:false},ticks:{color:p.muted,font:{size:9},callback:v=>money(v)}},
       yC:{position:'right',display:false}}}});
 
   const mp=sum(pres,'sp'),me=sum(ead.filter(r=>r.m==='EAD'),'sp'),ms=sum(semi,'sp');
@@ -848,7 +848,7 @@ function renderGoogle(){
       tooltip:{callbacks:{label:c=>c.dataset.label==='Conversões'?'Conversões: '+intf(c.raw):c.dataset.label+': '+money(c.raw)}}},
     scales:{x:{grid:{display:false},ticks:{color:p.muted,font:{size:8},maxTicksLimit:12}},
       yL:{position:'left',grace:'12%',grid:{color:p.border},ticks:{color:p.muted,font:{size:9}},title:{display:true,text:'Conversões',color:p.muted,font:{size:9}}},
-      yI:{position:'right',grid:{display:false},ticks:{color:p.muted,font:{size:9},callback:v=>money(v)}},
+      yI:{position:'right',beginAtZero:true,grid:{display:false},ticks:{color:p.muted,font:{size:9},callback:v=>money(v)}},
       yC:{position:'right',display:false}}}});
   const agg={};rows.forEach(r=>{const k=r.c+'||'+r.ch;(agg[k]=agg[k]||{c:r.c,ch:r.ch,sp:0,cv:0,ck:0});agg[k].sp+=r.sp;agg[k].cv+=r.cv;agg[k].ck+=r.ck;});
   const list=Object.values(agg).map(a=>({...a,cpl:a.cv?a.sp/a.cv:0})).sort((a,b)=>b.sp-a.sp);
@@ -911,7 +911,7 @@ function renderHistMeta(){
       tooltip:{callbacks:{label:c=>c.dataset.label==='Leads'?'Leads: '+intf(c.raw):c.dataset.label+': '+money(c.raw)}}},
     scales:{x:{grid:{display:false},ticks:{color:p.muted,font:{size:10}}},
       yL:{position:'left',grace:'12%',grid:{color:p.border},ticks:{color:p.muted,font:{size:9}},title:{display:true,text:'Leads',color:p.muted,font:{size:9}}},
-      yI:{position:'right',grid:{display:false},ticks:{color:p.muted,font:{size:9},callback:v=>money(v)}},
+      yI:{position:'right',beginAtZero:true,grid:{display:false},ticks:{color:p.muted,font:{size:9},callback:v=>money(v)}},
       yC:{position:'right',display:false}}}});
   miniBar('chHmCPM',labels,m.map(x=>x.im?x.sp/x.im*1000:0),p.metaBar,v=>money(v));
   miniBar('chHmCTR',labels,m.map(x=>x.im?x.ck/x.im*100:0),p.gold,v=>fmt(v,2)+'%');
@@ -939,7 +939,7 @@ function renderHistGoogle(){
       tooltip:{callbacks:{label:c=>c.dataset.label==='Conversões'?'Conversões: '+intf(c.raw):c.dataset.label+': '+money(c.raw)}}},
     scales:{x:{grid:{display:false},ticks:{color:p.muted,font:{size:10}}},
       yL:{position:'left',grace:'12%',grid:{color:p.border},ticks:{color:p.muted,font:{size:9}},title:{display:true,text:'Conversões',color:p.muted,font:{size:9}}},
-      yI:{position:'right',grid:{display:false},ticks:{color:p.muted,font:{size:9},callback:v=>money(v)}},
+      yI:{position:'right',beginAtZero:true,grid:{display:false},ticks:{color:p.muted,font:{size:9},callback:v=>money(v)}},
       yC:{position:'right',display:false}}}});
   miniBar('chHgCPC',labels,m.map(x=>x.ck?x.sp/x.ck:0),p.googleBar,v=>money(v));
   miniBar('chHgCTR',labels,m.map(x=>x.im?x.ck/x.im*100:0),p.gold,v=>fmt(v,2)+'%');
@@ -1021,7 +1021,7 @@ function consolidado(ids,meta,goog,kws,view,cmpMap){
       tooltip:{callbacks:{label:c=>c.dataset.type==='bar'?c.dataset.label+': '+intf(c.raw):(c.dataset.label==='Investimento'?'Investimento: '+money(c.raw):'CPL: '+money(c.raw))}}},
     scales:{x:{stacked:true,grid:{display:false},ticks:{color:p.muted,font:{size:mes?10:8},maxTicksLimit:12}},
       yL:{stacked:true,position:'left',grace:'12%',grid:{color:p.border},ticks:{color:p.muted,font:{size:9}},title:{display:true,text:'Resultados',color:p.muted,font:{size:9}}},
-      yI:{position:'right',grid:{display:false},ticks:{color:p.muted,font:{size:9},callback:v=>money(v)}},
+      yI:{position:'right',beginAtZero:true,grid:{display:false},ticks:{color:p.muted,font:{size:9},callback:v=>money(v)}},
       yC:{position:'right',display:false}}}});
 
   const camps={};
