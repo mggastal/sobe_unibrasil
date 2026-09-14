@@ -91,14 +91,29 @@ body{font-family:'DM Sans',sans-serif;background:var(--bgGrad);background-attach
 .total-bar .tleads{font-family:'DM Sans',sans-serif;font-weight:700;font-size:20px;color:var(--gold);}
 .total-bar .tarrow{margin-left:auto;font-size:17px;font-weight:700;color:#CADCFC;}
 
+/* TikTok — canal de teste */
+.canal-tiktok{margin-top:20px;padding:22px 28px;display:flex;align-items:center;justify-content:space-between;gap:20px;flex-wrap:wrap;border-left:4px solid #000;}
+.canal-tiktok .tk-left{display:flex;align-items:center;gap:14px;}
+.canal-tiktok .tk-right{text-align:right;}
+.tk-badge{font-size:10px;font-weight:700;letter-spacing:.1em;color:#fff;background:#111;padding:3px 9px;border-radius:20px;}
+.tk-note{margin-top:14px;font-size:13.5px;color:var(--muted);line-height:1.6;background:var(--surface2);border:1px solid var(--border);border-radius:var(--r);padding:16px 20px;}
+.tk-note b{color:var(--navy);}
+
 /* cronograma */
 .crono{display:grid;grid-template-columns:1fr 340px;gap:22px;align-items:stretch;}
-.chart-card{padding:26px 24px 20px;}
-.chart{display:flex;align-items:flex-end;gap:14px;height:340px;padding-top:34px;border-bottom:2px solid var(--border);}
-.col{flex:1;display:flex;flex-direction:column;justify-content:flex-end;align-items:center;height:100%;}
-.col .bar{width:78%;background:var(--gold);border-radius:7px 7px 0 0;position:relative;min-height:10px;box-shadow:0 3px 10px rgba(217,158,0,.25);}
-.col .bar .v{position:absolute;top:-26px;left:50%;transform:translateX(-50%);font-size:13px;font-weight:700;color:var(--text);white-space:nowrap;}
+.chart-card{padding:26px 24px 14px;display:flex;flex-direction:column;}
+.chart{display:flex;align-items:flex-end;gap:14px;height:330px;padding-top:36px;border-bottom:2px solid var(--border);}
+.col{flex:1;display:flex;flex-direction:column;justify-content:flex-end;align-items:center;height:100%;position:relative;}
+.stack{width:80%;display:flex;flex-direction:column;justify-content:flex-end;position:relative;min-height:10px;border-radius:7px 7px 0 0;overflow:hidden;box-shadow:0 3px 10px rgba(34,53,125,.16);}
+.seg{width:100%;display:flex;align-items:center;justify-content:center;font-size:10px;font-weight:700;color:#fff;overflow:hidden;}
+.seg.meta{background:var(--meta);}
+.seg.goog{background:var(--goog);color:#3a2c05;}
+.seg.tk{background:#111;}
+.col .tot{position:absolute;left:0;right:0;text-align:center;font-size:13px;font-weight:700;color:var(--text);white-space:nowrap;}
 .col .m{margin-top:10px;font-size:14px;font-weight:700;color:var(--text);}
+.chart-legend{display:flex;gap:18px;justify-content:center;margin-top:14px;flex-wrap:wrap;}
+.chart-legend .lg{display:flex;align-items:center;gap:6px;font-size:12px;color:var(--muted);}
+.chart-legend .sw{width:12px;height:12px;border-radius:3px;}
 .leads-card{padding:24px 24px;display:flex;flex-direction:column;}
 .leads-card h3{font-family:'DM Sans',sans-serif;font-weight:700;font-size:18px;color:var(--navy);margin-bottom:12px;}
 .lrow{display:flex;justify-content:space-between;align-items:center;padding:8px 0;border-bottom:1px solid var(--border);}
@@ -140,10 +155,10 @@ body{font-family:'DM Sans',sans-serif;background:var(--bgGrad);background-attach
     <div class="hero-kpis">
       <div><div class="hk-v">1.700</div><div class="hk-l">matrículas (meta)</div></div>
       <div><div class="hk-v">17.990</div><div class="hk-l">leads necessários</div></div>
-      <div><div class="hk-v">R$ 449.750</div><div class="hk-l">investimento</div></div>
+      <div><div class="hk-v">R$ 473.750</div><div class="hk-l">investimento total*</div></div>
       <div><div class="hk-v">R$ 25</div><div class="hk-l">CPL projetado</div></div>
     </div>
-    <div class="brand">Sobé Estratégias</div>
+    <div class="brand">* Inclui R$ 24.000 de teste em TikTok (Meta + Google: R$ 449.750) &nbsp;·&nbsp; Sobé Estratégias</div>
   </div>
 </div>
 
@@ -228,12 +243,12 @@ body{font-family:'DM Sans',sans-serif;background:var(--bgGrad);background-attach
   <div class="sec">
     <div class="sec-tag">Distribuição</div>
     <div class="sec-h">Divisão por canal</div>
-    <div class="sec-s">Mantendo a mesma proporção de investimento do ciclo anterior (54% Meta / 46% Google).</div>
+    <div class="sec-s">Meta e Google mantêm a mesma proporção de investimento do ciclo anterior (54% / 46%). O TikTok entra como canal de teste.</div>
     <div class="grid2" style="margin-top:22px">
       <div class="card canal">
         <div class="canal-hd">
           <div class="canal-ic" style="background:var(--meta)">f</div>
-          <div><div class="canal-nm">Meta Ads</div><div class="canal-pc">53,5% do investimento</div></div>
+          <div><div class="canal-nm">Meta Ads</div><div class="canal-pc">53,5% do investimento base</div></div>
         </div>
         <div class="canal-inv" style="color:var(--meta)">R$ 240.616</div>
         <div class="canal-leads"><b>9.625 leads</b> <span style="color:var(--muted)">· CPL R$ 25</span></div>
@@ -242,17 +257,36 @@ body{font-family:'DM Sans',sans-serif;background:var(--bgGrad);background-attach
       <div class="card canal">
         <div class="canal-hd">
           <div class="canal-ic" style="background:var(--goog)">G</div>
-          <div><div class="canal-nm">Google Ads</div><div class="canal-pc">46,5% do investimento</div></div>
+          <div><div class="canal-nm">Google Ads</div><div class="canal-pc">46,5% do investimento base</div></div>
         </div>
         <div class="canal-inv" style="color:var(--goog)">R$ 209.134</div>
         <div class="canal-leads"><b>8.365 leads</b> <span style="color:var(--muted)">· CPL R$ 25</span></div>
         <div class="canal-note">Investimento no período de captação</div>
       </div>
     </div>
+
+    <!-- TikTok — canal de teste -->
+    <div class="card canal-tiktok">
+      <div class="tk-left">
+        <div class="canal-ic" style="background:#000">♪</div>
+        <div>
+          <div class="canal-nm" style="display:flex;align-items:center;gap:10px">TikTok Ads <span class="tk-badge">TESTE</span></div>
+          <div class="canal-pc">Canal experimental · R$ 4.000/mês durante a campanha (6 meses)</div>
+        </div>
+      </div>
+      <div class="tk-right">
+        <div class="canal-inv" style="color:#111">R$ 24.000</div>
+        <div class="canal-note" style="margin-top:4px">Sem meta de leads definida</div>
+      </div>
+    </div>
+    <div class="tk-note">
+      O TikTok não entra na projeção de leads e matrículas — <b>não temos histórico de conversão nesse canal ainda</b>. O objetivo do teste é justamente <b>coletar os primeiros dados de CPL e conversão</b> para dar previsibilidade às próximas campanhas. O investimento soma ao total, mas a meta de 1.700 matrículas segue sustentada apenas por Meta e Google.
+    </div>
+
     <div class="total-bar">
       <span class="tl">TOTAL</span>
-      <span class="tv">R$ 449.750</span>
-      <span class="tleads">17.990 leads</span>
+      <span class="tv">R$ 473.750</span>
+      <span style="font-size:12px;color:#9FB0DE">Meta + Google (R$ 449.750) + TikTok teste (R$ 24.000)</span>
       <span class="tarrow">→ 1.700 matrículas</span>
     </div>
   </div>
@@ -261,10 +295,15 @@ body{font-family:'DM Sans',sans-serif;background:var(--bgGrad);background-attach
   <div class="sec">
     <div class="sec-tag">Cronograma</div>
     <div class="sec-h">Distribuição do investimento por mês</div>
-    <div class="sec-s">Concentração entre dezembro e fevereiro (pico de decisão); menor em outubro; março reduz ao nível de novembro.</div>
+    <div class="sec-s">Investimento mensal por canal — concentração entre dezembro e fevereiro (pico de decisão); menor em outubro; março reduz ao nível de novembro. O TikTok soma R$ 4.000 fixos por mês.</div>
     <div class="crono" style="margin-top:22px">
       <div class="card chart-card">
         <div class="chart" id="chart"></div>
+        <div class="chart-legend">
+          <div class="lg"><span class="sw" style="background:var(--meta)"></span>Meta</div>
+          <div class="lg"><span class="sw" style="background:var(--goog)"></span>Google</div>
+          <div class="lg"><span class="sw" style="background:#111"></span>TikTok (teste)</div>
+        </div>
       </div>
       <div class="card leads-card">
         <h3>Leads por mês</h3>
@@ -289,21 +328,33 @@ body{font-family:'DM Sans',sans-serif;background:var(--bgGrad);background-attach
 <div class="foot">Projeção de Captação · UniBrasil 2027-1 · Desenvolvido por <b>Sobé Estratégias</b></div>
 
 <script>
-// gráfico de colunas (mesma pegada do dashboard)
+// gráfico de colunas empilhadas: Meta (azul) + Google (amarelo) + TikTok (preto)
+// valores em milhares
 const meses=[
-  {m:"Out",v:42,lbl:"R$ 42 mil"},
-  {m:"Nov",v:60,lbl:"R$ 60 mil"},
-  {m:"Dez",v:96,lbl:"R$ 96 mil"},
-  {m:"Jan",v:96,lbl:"R$ 96 mil"},
-  {m:"Fev",v:96,lbl:"R$ 96 mil"},
-  {m:"Mar",v:60,lbl:"R$ 60 mil"},
+  {m:"Out", meta:22, goog:20, tk:4},
+  {m:"Nov", meta:32, goog:28, tk:4},
+  {m:"Dez", meta:51, goog:45, tk:4},
+  {m:"Jan", meta:51, goog:45, tk:4},
+  {m:"Fev", meta:51, goog:44.75, tk:4},
+  {m:"Mar", meta:32, goog:28, tk:4},
 ];
-const max=96;
-document.getElementById('chart').innerHTML=meses.map(x=>`
+const maxTot=100; // maior total (dez/jan) para escalar a altura
+const brk=v=>"R$ "+(Number.isInteger(v)?v:v.toFixed(0))+" mil";
+document.getElementById('chart').innerHTML=meses.map(x=>{
+  const tot=x.meta+x.goog+x.tk;
+  const hPct=(tot/maxTot*100)*0.82+8;   // altura total da pilha (% da área)
+  const segH=v=>(v/tot*100);
+  return `
   <div class="col">
-    <div class="bar" style="height:${(x.v/max*100)*0.82+8}%"><div class="v">${x.lbl}</div></div>
+    <div class="tot" style="bottom:calc(${hPct}% + 30px)">${brk(tot)}</div>
+    <div class="stack" style="height:${hPct}%">
+      <div class="seg meta" style="height:${segH(x.meta)}%">${brk(x.meta)}</div>
+      <div class="seg goog" style="height:${segH(x.goog)}%">${brk(x.goog)}</div>
+      <div class="seg tk" style="height:${segH(x.tk)}%">${brk(x.tk)}</div>
+    </div>
     <div class="m">${x.m}</div>
-  </div>`).join('');
+  </div>`;
+}).join('');
 </script>
 </body>
 </html>
