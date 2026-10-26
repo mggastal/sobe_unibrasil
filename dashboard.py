@@ -47,6 +47,7 @@ ABAS = {
     "bk_platform": "breakdown-platform",
     "g_bd_gender": "google-breakdown-gender",
     "g_bd_age": "google-breakdown-age",
+    "tiktok": "tiktok-ads",
     # blocos anuais fixos
     "meta_2024": "meta-2024",
     "meta_2025": "meta-2025",
@@ -449,8 +450,78 @@ gdemo_age = build_gdemo("g_bd_age", "Age (Ad Group Criterion)", "ag")
 if CAMP_APENAS:
     gdemo_gen, gdemo_age = [], []
 
+# ───────────────────────── TIKTOK (engajamento) ─────────────────────────
+# Aba 'tiktok-ads' (Stract, nível anúncio/dia). Campanha de engajamento/seguidores:
+# não há lead — o foco é view, retenção (2s/6s/quartis) e interação.
+# Alcance NÃO entra: não é somável entre dias.
+# As capas do TikTok vêm com URL assinada que expira em ~24h, então baixamos para
+# tiktok_thumbs/<ad_id>.jpg (fica no repo; só baixa o que ainda não existe).
+TT_THUMBS_DIR = Path("tiktok_thumbs")
+TT_COLS = {
+    "sp": "Spend (Cost, Amount Spent)", "im": "Impressions", "ck": "Clicks",
+    "vv": "Video Views", "v2": "2-Second Video Views", "v6": "6-Second Video Views",
+    "p25": "Video Views at 25 Percent", "p50": "Video Views at 50 Percent",
+    "p75": "Video Views at 75 Percent", "p100": "Video Views at 100 Percent",
+    "lk": "Paid Likes", "cm": "Paid Comments", "sh": "Paid Shares",
+    "fw": "Paid Followers", "pv": "Paid Profile Visit",
+}
+
+def baixar_thumb_tt(ad_id, url):
+    """Salva a capa do anúncio localmente; devolve o caminho relativo ou ''."""
+    TT_THUMBS_DIR.mkdir(exist_ok=True)
+    dest = TT_THUMBS_DIR / f"{ad_id}.jpg"
+    if dest.exists():
+        return dest.as_posix()
+    if not (isinstance(url, str) and url.startswith("http")):
+        return ""
+    try:
+        import requests
+        r = requests.get(url, timeout=20)
+        if r.ok and r.headers.get("content-type", "").startswith("image"):
+            dest.write_bytes(r.content)
+            return dest.as_posix()
+    except Exception as e:
+        print(f"  ! capa TikTok {ad_id} não baixou: {e}")
+    return ""
+
+def build_tiktok(df):
+    # gviz devolve a 1ª aba quando o nome não existe — sem as colunas do TikTok, ignora
+    if "Paid Followers" not in df.columns or "Video Views" not in df.columns:
+        print("  (aba tiktok-ads ausente ou sem colunas do TikTok — página fica vazia)")
+        return [], {}
+    df = df.copy()
+    df["Date"] = parse_data(df["Date"])
+    df = df[df["Date"].notna()].copy()
+    for k, c in TT_COLS.items():
+        df[k] = numcol(df, c)
+    # tempo médio por view → segundos totais (somável); média = wt / vv
+    df["wt"] = numcol(df, "Video Average Watch Time Per Video View") * df["vv"]
+    df["id"] = df["Ad ID"].astype(str) if "Ad ID" in df.columns else df["Ad Name"].astype(str)
+    df["dstr"] = df["Date"].dt.strftime("%Y-%m-%d")
+    ks = list(TT_COLS) + ["wt"]
+    agg = df.groupby(["dstr", "Campaign Name", "id"], as_index=False)[ks].sum()
+    rows = [{"d": r["dstr"], "c": r["Campaign Name"], "id": r["id"],
+             **{k: (r2(r[k]) if k in ("sp", "wt") else int(r[k])) for k in ks}}
+            for _, r in agg.iterrows()]
+    # metadados por anúncio (nome, status, capa) — linha mais recente com valor
+    ads = {}
+    for _, r in df.sort_values("Date").iterrows():
+        a = ads.setdefault(r["id"], {"nm": str(r.get("Ad Name", "")), "ag": str(r.get("Adgroup Name", "")),
+                                     "st": "", "th": "", "_url": ""})
+        st = str(r.get("Ad Operation Status", "") or "").upper()
+        if st and st != "NAN":
+            a["st"] = "ACTIVE" if st == "ENABLE" else st
+        u = r.get("Video Thumbnail URL")
+        if isinstance(u, str) and u.startswith("http"):
+            a["_url"] = u
+    for ad_id, a in ads.items():
+        a["th"] = baixar_thumb_tt(ad_id, a.pop("_url"))
+    return rows, ads
+
+tiktok_rows, tiktok_ads = build_tiktok(carregar("tiktok"))
+
 # ───────────────────────── PAYLOAD ─────────────────────────
-all_dates = [x["d"] for x in meta_rows] + [x["d"] for x in google_rows]
+all_dates = [x["d"] for x in meta_rows] + [x["d"] for x in google_rows] + [x["d"] for x in tiktok_rows]
 D = {
     "cliente": CLIENTE, "moeda": MOEDA, "gerado_em": date.today().strftime("%d/%m/%Y"),
     "dmin": min(all_dates), "dmax": max(all_dates),
@@ -459,6 +530,7 @@ D = {
     "campsList": CAMPS_LIST, "campsModal": CAMPS_MODAL,
     "days": DAYS_LIST, "agList": AG_LIST, "posList": POS_LIST,
     "keywords": keyword_rows, "thumbs": thumbs, "status": status,
+    "tiktok": tiktok_rows, "tiktokAds": tiktok_ads,
     "anos": {
         "2024": {"meta": meta_2024, "google": g2024_rows, "keywords": g2024_kw},
         "2025": {"meta": meta_2025, "google": g2025_rows, "keywords": g2025_kw},
@@ -466,7 +538,8 @@ D = {
 }
 Path(DATA_FILE).write_text(json.dumps(D, ensure_ascii=False), encoding="utf-8")
 print(f"✓ {DATA_FILE}: {len(meta_rows)} linhas Meta, {len(google_rows)} Google, {len(demo_rows)} demo, "
-      f"{len(pos_rows)} posicionamento, {len(gdemo_gen)+len(gdemo_age)} demo Google")
+      f"{len(pos_rows)} posicionamento, {len(gdemo_gen)+len(gdemo_age)} demo Google, "
+      f"{len(tiktok_rows)} TikTok ({len(tiktok_ads)} anúncios)")
 print(f"  anuais → 2024: meta {len(meta_2024)}, google {len(g2024_rows)}, kw {len(g2024_kw)} | "
       f"2025: meta {len(meta_2025)}, google {len(g2025_rows)}, kw {len(g2025_kw)}")
 

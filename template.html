@@ -72,6 +72,8 @@ body{font-family:'DM Sans',sans-serif;background:var(--bgGrad);background-attach
 .sb-section{padding:14px 12px;flex:1;}
 .sb-grp-hd{display:flex;align-items:center;gap:8px;padding:4px 8px;margin:10px 0 4px;}
 .sb-grp-ic{width:22px;height:22px;border-radius:6px;display:flex;align-items:center;justify-content:center;font-family:'Syne';font-weight:800;font-size:11px;color:#fff;}
+.sb-logo-ic{background:#fff;box-shadow:0 1px 3px rgba(0,0,0,.25);}
+.sb-logo-ic.tt{background:#000;}
 .sb-grp-lbl{font-size:9.5px;letter-spacing:1.4px;text-transform:uppercase;color:rgba(255,255,255,.4);font-weight:700;}
 .sb-item{display:flex;align-items:center;gap:9px;padding:9px 11px;border-radius:9px;color:rgba(255,255,255,.72);text-decoration:none;font-size:12.5px;font-weight:500;cursor:pointer;transition:all .15s;}
 .sb-item .ic{font-size:14px;width:16px;text-align:center;}
@@ -215,6 +217,11 @@ html[data-theme="light"][data-wb="1"]{--bgGrad:#ffffff;}
 .ad-mt .lbl{color:var(--muted);text-transform:uppercase;letter-spacing:.4px;font-size:7.5px;}
 .ad-mt .v{font-family:'Syne';font-weight:700;font-size:12px;}
 
+/* TikTok — capa vertical e métricas extras no card */
+.ads-grid.tt .ad-thumb{aspect-ratio:3/4;background:#111;}
+.ads-grid.tt .ad-mt{row-gap:8px;}
+.tt-sort{margin-left:auto;}
+
 .muted-note{font-size:11px;color:var(--muted);background:var(--surface2);border:1px solid var(--border);border-radius:10px;padding:12px 14px;margin-top:14px;line-height:1.6;}
 .foot{padding:18px 22px;color:var(--muted2);font-size:11px;display:flex;justify-content:center;align-items:center;flex-wrap:wrap;gap:6px;border-top:1px solid var(--border);}
 .foot-sobe{display:inline-flex;align-items:center;gap:6px;}
@@ -251,14 +258,17 @@ html[data-theme="light"][data-wb="1"]{--bgGrad:#ffffff;}
 <aside class="sb" id="sb">
   <div class="sb-logo"><img src="logo.png" alt="UniBrasil" class="sb-logoimg"><div class="sub" style="text-align:center">Dashboard de Captação</div></div>
   <div class="sb-section">
-    <div class="sb-grp-hd"><div class="sb-grp-ic" style="background:linear-gradient(135deg,#1877f2,#42a5f5)">f</div><div class="sb-grp-lbl">Meta Ads</div></div>
+    <div class="sb-grp-hd"><div class="sb-grp-ic sb-logo-ic"><svg viewBox="0 0 24 24" width="15" height="15"><path fill="#0081FB" d="M6.915 4.03c-1.968 0-3.683 1.28-4.871 3.113C.704 9.208 0 11.883 0 14.449c0 .706.07 1.369.21 1.973a6.624 6.624 0 0 0 .265.86 5.297 5.297 0 0 0 .371.761c.696 1.159 1.818 1.927 3.593 1.927 1.497 0 2.633-.671 3.965-2.444.76-1.012 1.144-1.626 2.663-4.32l.756-1.339.186-.325c.061.1.121.196.183.3l2.152 3.595c.724 1.21 1.665 2.556 2.47 3.314 1.046.987 1.992 1.22 3.06 1.22 1.075 0 1.876-.355 2.455-.843a3.743 3.743 0 0 0 .81-.973c.542-.939.861-2.127.861-3.745 0-2.72-.681-5.357-2.084-7.45-1.282-1.912-2.957-2.93-4.716-2.93-1.047 0-2.088.467-3.053 1.308-.652.57-1.257 1.29-1.82 2.05-.69-.875-1.335-1.547-1.958-2.056-1.182-.966-2.315-1.303-3.454-1.303zm10.16 2.053c1.147 0 2.188.758 2.992 1.999 1.132 1.748 1.647 4.195 1.647 6.4 0 1.548-.368 2.9-1.839 2.9-.58 0-1.027-.23-1.664-1.004-.496-.601-1.343-1.878-2.832-4.358l-.617-1.028a44.908 44.908 0 0 0-1.255-1.98c.07-.109.141-.224.211-.327 1.12-1.667 2.118-2.602 3.358-2.602zm-10.201.553c1.265 0 2.058.791 2.675 1.446.307.327.737.871 1.234 1.579l-1.02 1.566c-.757 1.163-1.882 3.017-2.837 4.338-1.191 1.649-1.81 1.817-2.486 1.817-.524 0-1.038-.237-1.383-.794-.263-.426-.464-1.13-.464-2.046 0-2.221.63-4.535 1.66-6.088.454-.687.964-1.226 1.533-1.533a2.264 2.264 0 0 1 1.088-.285z"/></svg></div><div class="sb-grp-lbl">Meta Ads</div></div>
     <a class="sb-item active" data-page="meta" onclick="goPage('meta',this)">Visão Geral</a>
     <a class="sb-item" data-page="criativos" onclick="goPage('criativos',this)">Ranking de Criativos</a>
     <a class="sb-item" data-page="cursos" onclick="goPage('cursos',this)">Ranking de Cursos</a>
     <a class="sb-item" data-page="histmeta" onclick="goPage('histmeta',this)">Histórico Mensal</a>
-    <div class="sb-grp-hd" style="margin-top:14px"><div class="sb-grp-ic" style="background:linear-gradient(135deg,#fbbc04,#ea4335)">G</div><div class="sb-grp-lbl">Google Ads</div></div>
+    <div class="sb-grp-hd" style="margin-top:14px"><div class="sb-grp-ic sb-logo-ic"><svg viewBox="0 0 48 48" width="14" height="14"><path fill="#EA4335" d="M24 9.5c3.54 0 6.71 1.22 9.21 3.6l6.85-6.85C35.9 2.38 30.47 0 24 0 14.62 0 6.51 5.38 2.56 13.22l7.98 6.19C12.43 13.72 17.74 9.5 24 9.5z"/><path fill="#4285F4" d="M46.98 24.55c0-1.57-.15-3.09-.38-4.55H24v9.02h12.94c-.58 2.96-2.26 5.48-4.78 7.18l7.73 6c4.51-4.18 7.09-10.36 7.09-17.65z"/><path fill="#FBBC05" d="M10.53 28.59c-.48-1.45-.76-2.99-.76-4.59s.27-3.14.76-4.59l-7.98-6.19C.92 16.46 0 20.12 0 24c0 3.88.92 7.54 2.56 10.78l7.97-6.19z"/><path fill="#34A853" d="M24 48c6.48 0 11.93-2.13 15.89-5.81l-7.73-6c-2.15 1.45-4.92 2.3-8.16 2.3-6.26 0-11.57-4.22-13.47-9.91l-7.98 6.19C6.51 42.62 14.62 48 24 48z"/></svg></div><div class="sb-grp-lbl">Google Ads</div></div>
     <a class="sb-item" data-page="google" onclick="goPage('google',this)">Visão Geral</a>
     <a class="sb-item" data-page="histgoogle" onclick="goPage('histgoogle',this)">Histórico Mensal</a>
+    <div class="sb-grp-hd" style="margin-top:14px"><div class="sb-grp-ic sb-logo-ic tt"><svg viewBox="-1 -1 26 26" width="14" height="14"><path fill="#25F4EE" transform="translate(-.9 -.6)" d="M12.525.02c1.31-.02 2.61-.01 3.91-.02.08 1.53.63 3.09 1.75 4.17 1.12 1.11 2.7 1.62 4.24 1.79v4.03c-1.44-.05-2.89-.35-4.2-.97-.57-.26-1.1-.59-1.62-.93-.01 2.92.01 5.84-.02 8.75-.08 1.4-.54 2.79-1.35 3.94-1.31 1.92-3.58 3.17-5.91 3.21-1.43.08-2.86-.31-4.08-1.03-2.02-1.19-3.44-3.37-3.65-5.71-.02-.5-.03-1-.01-1.49.18-1.9 1.12-3.72 2.58-4.96 1.66-1.44 3.98-2.13 6.15-1.72.02 1.48-.04 2.96-.04 4.44-.99-.32-2.15-.23-3.02.37-.63.41-1.11 1.04-1.36 1.75-.21.51-.15 1.07-.14 1.61.24 1.64 1.82 3.02 3.5 2.87 1.12-.01 2.19-.66 2.77-1.61.19-.33.4-.67.41-1.06.1-1.79.06-3.57.07-5.36.01-4.03-.01-8.05.02-12.07z"/><path fill="#FE2C55" transform="translate(.9 .6)" d="M12.525.02c1.31-.02 2.61-.01 3.91-.02.08 1.53.63 3.09 1.75 4.17 1.12 1.11 2.7 1.62 4.24 1.79v4.03c-1.44-.05-2.89-.35-4.2-.97-.57-.26-1.1-.59-1.62-.93-.01 2.92.01 5.84-.02 8.75-.08 1.4-.54 2.79-1.35 3.94-1.31 1.92-3.58 3.17-5.91 3.21-1.43.08-2.86-.31-4.08-1.03-2.02-1.19-3.44-3.37-3.65-5.71-.02-.5-.03-1-.01-1.49.18-1.9 1.12-3.72 2.58-4.96 1.66-1.44 3.98-2.13 6.15-1.72.02 1.48-.04 2.96-.04 4.44-.99-.32-2.15-.23-3.02.37-.63.41-1.11 1.04-1.36 1.75-.21.51-.15 1.07-.14 1.61.24 1.64 1.82 3.02 3.5 2.87 1.12-.01 2.19-.66 2.77-1.61.19-.33.4-.67.41-1.06.1-1.79.06-3.57.07-5.36.01-4.03-.01-8.05.02-12.07z"/><path fill="#fff" d="M12.525.02c1.31-.02 2.61-.01 3.91-.02.08 1.53.63 3.09 1.75 4.17 1.12 1.11 2.7 1.62 4.24 1.79v4.03c-1.44-.05-2.89-.35-4.2-.97-.57-.26-1.1-.59-1.62-.93-.01 2.92.01 5.84-.02 8.75-.08 1.4-.54 2.79-1.35 3.94-1.31 1.92-3.58 3.17-5.91 3.21-1.43.08-2.86-.31-4.08-1.03-2.02-1.19-3.44-3.37-3.65-5.71-.02-.5-.03-1-.01-1.49.18-1.9 1.12-3.72 2.58-4.96 1.66-1.44 3.98-2.13 6.15-1.72.02 1.48-.04 2.96-.04 4.44-.99-.32-2.15-.23-3.02.37-.63.41-1.11 1.04-1.36 1.75-.21.51-.15 1.07-.14 1.61.24 1.64 1.82 3.02 3.5 2.87 1.12-.01 2.19-.66 2.77-1.61.19-.33.4-.67.41-1.06.1-1.79.06-3.57.07-5.36.01-4.03-.01-8.05.02-12.07z"/></svg></div><div class="sb-grp-lbl">TikTok Ads</div></div>
+    <a class="sb-item" data-page="tiktok" onclick="goPage('tiktok',this)">Visão Geral</a>
+    <a class="sb-item" data-page="ttcriativos" onclick="goPage('ttcriativos',this)">Ranking de Criativos</a>
     <div class="sb-grp-hd" style="margin-top:14px"><div class="sb-grp-ic" style="background:linear-gradient(135deg,#22357D,#D99E00)">Σ</div><div class="sb-grp-lbl">Consolidado Anual</div></div>
     <a class="sb-item" data-page="resumo" onclick="goPage('resumo',this)">Resumo Geral (12 meses)</a>
     <a class="sb-item" data-page="ano2025" onclick="goPage('ano2025',this)">2025</a>
@@ -410,6 +420,45 @@ html[data-theme="light"][data-wb="1"]{--bgGrad:#ffffff;}
       </div>
       </div><!-- /gPublicoSec -->
       <div class="muted-note">No Google, "conversão" usa a métrica <b>Conversions</b> (mesma do Looker) — diferente de "lead" do Meta. Por isso as duas não são somadas.</div>
+    </div>
+
+    <!-- TIKTOK -->
+    <div class="page" id="page-tiktok">
+      <div class="krow" id="ttKpis"></div>
+      <div class="krow k4" id="ttKpis2"></div>
+      <div class="card">
+        <div class="card-hd">
+          <div><div class="card-t">Seguidores · Investimento · Custo por seguidor</div><div class="card-s">Passe o mouse para ver todos os indicadores</div></div>
+          <div class="seg-pill" id="ttViewPill">
+            <button class="pb active" data-v="dia" onclick="setTtView('dia',this)">Diário</button>
+            <button class="pb" data-v="sem" onclick="setTtView('sem',this)">Semanal</button>
+            <button class="pb" data-v="mes" onclick="setTtView('mes',this)">Mensal</button>
+          </div>
+        </div>
+        <div class="cw" style="height:260px"><canvas id="chTt"></canvas></div>
+      </div>
+      <div class="grid2">
+        <div class="card"><div class="card-hd"><div><div class="card-t">Retenção do vídeo</div><div class="card-s">% das visualizações que chegam a cada ponto</div></div></div><div class="cw" style="height:250px"><canvas id="chTtRet"></canvas></div></div>
+        <div class="card"><div class="card-hd"><div><div class="card-t">Composição do engajamento</div><div class="card-s">Curtidas, comentários, compartilhamentos e seguidores</div></div></div><div class="cw" style="height:250px"><canvas id="chTtEng"></canvas></div></div>
+      </div>
+      <div class="sec-h">Campanhas</div>
+      <div class="tc"><table><thead><tr><th>Campanha</th><th class="num">Invest.</th><th class="num">Impressões</th><th class="num">Views</th><th class="num">Seguidores</th><th class="num">Custo/seg.</th><th class="num">Engaj.</th><th class="num">Taxa eng.</th><th class="num">Hook rate</th></tr></thead><tbody id="ttCampsBody"></tbody></table></div>
+      <div class="muted-note"><b>Hook rate</b> = views de 2s ÷ impressões (o vídeo prendeu nos primeiros segundos?). <b>Hold rate</b> = views de 6s ÷ views de 2s. <b>Engajamentos</b> = curtidas + comentários + compartilhamentos + seguidores. Alcance não é exibido porque não pode ser somado entre dias.</div>
+    </div>
+
+    <!-- TIKTOK CRIATIVOS -->
+    <div class="page" id="page-ttcriativos">
+      <div class="krow k4" id="ttAdKpis"></div>
+      <div class="sec-h">Ranking de Criativos
+        <div class="seg-pill tt-sort" id="ttSortPill">
+          <button class="pb active" data-s="fw" onclick="setTtSort('fw',this)">Seguidores</button>
+          <button class="pb" data-s="hook" onclick="setTtSort('hook',this)">Hook rate</button>
+          <button class="pb" data-s="vv" onclick="setTtSort('vv',this)">Views</button>
+          <button class="pb" data-s="sp" onclick="setTtSort('sp',this)">Investimento</button>
+        </div>
+      </div>
+      <div class="ads-grid tt" id="ttAdsGrid"></div>
+      <div class="muted-note">As capas são baixadas para o dashboard a cada atualização (a URL do TikTok expira em ~24h). Anúncios excluídos no TikTok não trazem mais capa nem status — aparecem sem prévia.</div>
     </div>
 
     <!-- HISTÓRICO META -->
@@ -882,6 +931,99 @@ function renderGoogle(){
     return `<tr><td>${gAgeLbl(k)}</td><td class="num">${money(o.sp)}</td><td class="num">${intf(o.cv)}</td><td class="num">${o.cv?money(cc):'—'}</td></tr>`;}).join(''):'<tr><td colspan="4" class="empty">Sem dados</td></tr>';
 }
 
+/* ============ TIKTOK (engajamento) ============
+   Linhas diárias por anúncio: sp im ck vv v2 v6 p25 p50 p75 p100 lk cm sh fw pv wt(seg. assistidos) */
+const TT_KS=['sp','im','ck','vv','v2','v6','p25','p50','p75','p100','lk','cm','sh','fw','pv','wt'];
+const ttF=()=>(D.tiktok||[]).filter(r=>inRange(r.d));
+const money2=n=>M+" "+fmt(+n||0,2);
+const pct=(a,b)=>b?a/b*100:0;
+function ttTot(rows){const t={};TT_KS.forEach(k=>t[k]=sum(rows,k));t.eng=t.lk+t.cm+t.sh+t.fw;return t;}
+function ttMetrics(t){return{...t,cpf:t.fw?t.sp/t.fw:0,cpe:t.eng?t.sp/t.eng:0,cpm:t.im?t.sp/t.im*1000:0,
+  hook:pct(t.v2,t.im),hold:pct(t.v6,t.v2),comp:pct(t.p100,t.vv),er:pct(t.eng,t.im),avg:t.vv?t.wt/t.vv:0};}
+let ttView='dia',ttSort='fw';
+function setTtView(v,el){ttView=v;document.querySelectorAll('#ttViewPill .pb').forEach(b=>b.classList.remove('active'));el.classList.add('active');renderTiktok();}
+function setTtSort(s,el){ttSort=s;document.querySelectorAll('#ttSortPill .pb').forEach(b=>b.classList.remove('active'));el.classList.add('active');renderTtAds();}
+function ttEmpty(id,cols){const el=document.getElementById(id);if(el)el.innerHTML=cols?`<tr><td colspan="${cols}" class="empty">Sem dados do TikTok no período</td></tr>`:'<div class="empty">Sem dados do TikTok no período</div>';}
+
+function renderTiktok(){
+  const p=P(),rows=ttF(),m=ttMetrics(ttTot(rows));
+  const fAnt=periodoAnterior();
+  const a=fAnt?ttMetrics(ttTot((D.tiktok||[]).filter(r=>fAnt(r.d)))):null;
+  const A=k=>a?a[k]:null;
+  document.getElementById('ttKpis').innerHTML=
+    kpi('','Investimento',money(m.sp),delta(m.sp,A('sp'))||`CPM ${money2(m.cpm)}`)+
+    kpi('','Seguidores',intf(m.fw),delta(m.fw,A('fw'))||`${intf(m.pv)} visitas ao perfil`)+
+    kpi('','Custo/seguidor',money2(m.cpf),delta(m.cpf,A('cpf'),true)||'custo por seguidor')+
+    kpi('','Engajamentos',intf(m.eng),delta(m.eng,A('eng'))||`taxa ${fmt(m.er,2)}% · CPE ${money2(m.cpe)}`)+
+    kpi('','Hook rate',fmt(m.hook,1)+'%',delta(m.hook,A('hook'))||`hold ${fmt(m.hold,1)}% (6s ÷ 2s)`);
+  document.getElementById('ttKpis2').innerHTML=
+    kpi('','Visualizações',intf(m.vv),delta(m.vv,A('vv'))||`${intf(m.im)} impressões`)+
+    kpi('','Curtidas',intf(m.lk),delta(m.lk,A('lk'))||`${intf(m.cm)} coment. · ${intf(m.sh)} compart.`)+
+    kpi('','Taxa de conclusão',fmt(m.comp,1)+'%',delta(m.comp,A('comp'))||`${intf(m.p100)} views completas`)+
+    kpi('','Tempo médio assistido',fmt(m.avg,1)+'s',delta(m.avg,A('avg'))||'por visualização');
+
+  const vw=ttView,ks=['sp','fw','lk','cm','sh','vv','v2','im'];
+  let agg,key,labFn;
+  if(vw==='mes'){agg=byMonth(rows,ks);key='ym';labFn=mlabel;}
+  else if(vw==='sem'){agg=byWeek(rows,ks);key='w';labFn=wlabel;}
+  else{agg=byDay(rows,ks);key='d';labFn=dlabel;}
+  const dense=(vw==='dia');
+  draw('chTt',{data:{labels:agg.map(x=>labFn(x[key])),datasets:[
+    {type:'bar',label:'Seguidores',data:agg.map(x=>x.fw),backgroundColor:p.pk,borderRadius:dense?2:4,yAxisID:'yL',order:3},
+    {type:'line',label:'Investimento',data:agg.map(x=>x.sp),borderColor:INV,backgroundColor:INV,yAxisID:'yI',tension:.3,pointRadius:dense?0:3,borderWidth:2,order:2},
+    {type:'line',label:'Custo/seguidor',data:agg.map(x=>x.fw?x.sp/x.fw:0),borderColor:p.cpl,borderDash:[5,3],yAxisID:'yC',tension:.3,pointRadius:dense?0:3,borderWidth:2,order:1},
+  ]},options:{responsive:true,maintainAspectRatio:false,interaction:{mode:'index',intersect:false},
+    plugins:{legend:{position:'bottom',labels:{color:p.muted,boxWidth:9,padding:10}},
+      datalabels:{display:lblDisplay(dense),color:p.text,font:lblFont(),anchor:'end',align:'top',offset:1,formatter:(v,ctx)=>ctx.dataset.type==='bar'&&v>0?intf(v):''},
+      tooltip:{callbacks:{label:c=>c.dataset.type==='bar'?'Seguidores: '+intf(c.raw):c.dataset.label+': '+(c.dataset.label==='Custo/seguidor'?money2(c.raw):money(c.raw)),
+        afterBody:items=>{const x=agg[items[0].dataIndex];return['Curtidas: '+intf(x.lk),'Views: '+intf(x.vv),'Hook rate: '+fmt(pct(x.v2,x.im),1)+'%'];}}}},
+    scales:{x:{grid:{display:false},ticks:{color:p.muted,font:{size:dense?8:9},maxRotation:0,autoSkip:true,maxTicksLimit:dense?12:13}},
+      yL:{position:'left',grace:'12%',grid:{color:p.border},ticks:{color:p.muted,font:{size:9}},title:{display:true,text:'Seguidores',color:p.muted,font:{size:9}}},
+      yI:{position:'right',beginAtZero:true,grid:{display:false},ticks:{color:p.muted,font:{size:9},callback:v=>money(v)}},
+      yC:{position:'right',display:false}}}});
+
+  const retL=['Views','2s','6s','25%','50%','75%','100%'],retV=[m.vv,m.v2,m.v6,m.p25,m.p50,m.p75,m.p100];
+  draw('chTtRet',{type:'bar',data:{labels:retL,datasets:[{label:'Retenção',data:retV.map(v=>pct(v,m.vv)),backgroundColor:retL.map((_,i)=>i===0?p.accent:p.cy),borderRadius:5}]},
+    options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false},
+      datalabels:{display:lblDisplay(false),color:p.text,font:lblFont(),anchor:'end',align:'top',offset:1,formatter:v=>fmt(v,v<10?1:0)+'%'},
+      tooltip:{callbacks:{label:c=>`${intf(retV[c.dataIndex])} views (${fmt(c.raw,1)}%)`}}},
+      scales:{x:{grid:{display:false},ticks:{color:p.muted}},y:{max:110,grid:{color:p.border},ticks:{color:p.muted,callback:v=>v<=100?v+'%':''}}}}});
+  donut('chTtEng',['Curtidas','Comentários','Compartilh.','Seguidores'],[m.lk,m.cm,m.sh,m.fw],[p.pk,p.gold,p.cy,p.accent],v=>intf(v));
+
+  const cg={};rows.forEach(r=>{(cg[r.c]=cg[r.c]||[]).push(r);});
+  const cl=Object.keys(cg).map(c=>({c,...ttMetrics(ttTot(cg[c]))})).sort((x,y)=>y.sp-x.sp);
+  if(!cl.length)return ttEmpty('ttCampsBody',9);
+  document.getElementById('ttCampsBody').innerHTML=cl.map(x=>`<tr><td>${x.c}</td><td class="num">${money(x.sp)}</td><td class="num">${intf(x.im)}</td><td class="num">${intf(x.vv)}</td><td class="num">${intf(x.fw)}</td><td class="num">${x.fw?money2(x.cpf):'—'}</td><td class="num">${intf(x.eng)}</td><td class="num">${fmt(x.er,2)}%</td><td class="num">${fmt(x.hook,1)}%</td></tr>`).join('');
+}
+
+function renderTtAds(){
+  const p=P(),rows=ttF(),meta=D.tiktokAds||{};
+  const g={};rows.forEach(r=>{(g[r.id]=g[r.id]||[]).push(r);});
+  const nmCount={};Object.keys(g).forEach(id=>{const n=(meta[id]||{}).nm||id;nmCount[n]=(nmCount[n]||0)+1;});
+  let list=Object.keys(g).map(id=>{const o=meta[id]||{};const nm=o.nm||id;
+    return{id,nm:nmCount[nm]>1?`${nm} · #${id.slice(-4)}`:nm,ag:o.ag||'',st:o.st||'',th:o.th||'',...ttMetrics(ttTot(g[id]))};});
+  list.sort((a,b)=>b[ttSort]-a[ttSort]);
+  const t=ttMetrics(ttTot(rows));
+  document.getElementById('ttAdKpis').innerHTML=
+    kpi('','Criativos',list.length,`${list.filter(a=>a.st==='ACTIVE').length} ativos`)+
+    kpi('','Seguidores',intf(t.fw),`custo/seg. ${money2(t.cpf)}`)+
+    kpi('','Hook rate médio',fmt(t.hook,1)+'%',`hold ${fmt(t.hold,1)}%`)+
+    kpi('','Taxa de conclusão',fmt(t.comp,1)+'%',`tempo médio ${fmt(t.avg,1)}s`);
+  if(!list.length)return ttEmpty('ttAdsGrid');
+  document.getElementById('ttAdsGrid').innerHTML=list.map((a,i)=>`<div class="ad-card"><div class="ad-thumb">
+      ${a.th?`<img src="${a.th}" loading="lazy" onerror="this.style.display='none';this.parentNode.querySelector('.ph').style.display='block'">`:''}
+      <span class="ph" style="${a.th?'display:none':''}">🎬</span><span class="ad-rank">${i+1}</span></div>
+    <div class="ad-body"><div class="ad-nm" title="${a.nm} · ${a.ag}"><span class="status-dot ${a.st==='ACTIVE'?'active':'paused'}"></span>${a.nm}</div>
+      <div class="ad-mt">
+        <div><div class="lbl">Seguidores</div><div class="v">${intf(a.fw)}</div></div>
+        <div><div class="lbl">Custo/seg.</div><div class="v">${a.fw?money2(a.cpf):'—'}</div></div>
+        <div><div class="lbl">Invest.</div><div class="v">${money(a.sp)}</div></div>
+        <div><div class="lbl">Hook</div><div class="v">${fmt(a.hook,1)}%</div></div>
+        <div><div class="lbl">Conclusão</div><div class="v">${fmt(a.comp,1)}%</div></div>
+        <div><div class="lbl">Curtidas</div><div class="v">${intf(a.lk)}</div></div>
+      </div></div></div>`).join('');
+}
+
 /* ============ HISTÓRICO MENSAL ============ */
 const MES=['Jan','Fev','Mar','Abr','Mai','Jun','Jul','Ago','Set','Out','Nov','Dez'];
 const mlabel=ym=>{const[y,m]=ym.split('-');return MES[+m-1]+'/'+y.slice(2);};
@@ -1062,11 +1204,13 @@ function renderAll(){
   else if(curPage==='google')renderGoogle();
   else if(curPage==='histmeta')renderHistMeta();
   else if(curPage==='histgoogle')renderHistGoogle();
+  else if(curPage==='tiktok')renderTiktok();
+  else if(curPage==='ttcriativos')renderTtAds();
   else if(curPage==='resumo')renderResumo();
   else if(curPage==='ano2025')renderAno('2025');
   else if(curPage==='ano2024')renderAno('2024');
 }
-const TITLES={meta:'Meta Ads · Visão Geral',criativos:'Meta Ads · Ranking de Criativos',cursos:'Ranking de Cursos',google:'Google Ads · Visão Geral',histmeta:'Meta Ads · Histórico Mensal',histgoogle:'Google Ads · Histórico Mensal',resumo:'Resumo Geral (12 meses)',ano2025:'Consolidado Anual · 2025',ano2024:'Consolidado Anual · 2024'};
+const TITLES={meta:'Meta Ads · Visão Geral',criativos:'Meta Ads · Ranking de Criativos',cursos:'Ranking de Cursos',google:'Google Ads · Visão Geral',histmeta:'Meta Ads · Histórico Mensal',histgoogle:'Google Ads · Histórico Mensal',tiktok:'TikTok Ads · Visão Geral',ttcriativos:'TikTok Ads · Ranking de Criativos',resumo:'Resumo Geral (12 meses)',ano2025:'Consolidado Anual · 2025',ano2024:'Consolidado Anual · 2024'};
 function goPage(pg,el){
   curPage=pg;
   document.querySelectorAll('.page').forEach(s=>s.classList.remove('active'));
@@ -1075,7 +1219,7 @@ function goPage(pg,el){
   if(el)el.classList.add('active');
   document.getElementById('pageTitle').textContent=TITLES[pg];
   const consol=(pg==='resumo'||pg==='ano2025'||pg==='ano2024');
-  const noModal=(pg==='google'||pg==='histgoogle'||pg==='histmeta'||consol);
+  const noModal=(pg==='google'||pg==='histgoogle'||pg==='histmeta'||pg==='tiktok'||pg==='ttcriativos'||consol);
   document.getElementById('modalPill').style.opacity=noModal?'.4':'1';
   document.getElementById('modalPill').style.pointerEvents=noModal?'none':'auto';
   const metaPg=(pg==='meta'||pg==='criativos'||pg==='cursos'||pg==='histmeta');
