@@ -64,6 +64,12 @@ body{font-family:'DM Sans',sans-serif;background:var(--bgGrad);background-attach
 .app{display:flex;min-height:100vh;}
 
 .sb{width:212px;background:linear-gradient(180deg,#141C4A,#22357D);color:#fff;flex-shrink:0;position:fixed;top:0;left:0;height:100vh;display:flex;flex-direction:column;z-index:500;overflow-y:auto;}
+/* barra de rolagem do menu: fina, dourada, sem trilho */
+.sb{scrollbar-width:thin;scrollbar-color:rgba(217,158,0,.75) transparent;}
+.sb::-webkit-scrollbar{width:6px;}
+.sb::-webkit-scrollbar-track{background:transparent;}
+.sb::-webkit-scrollbar-thumb{background:linear-gradient(180deg,#F2C94C,#D99E00);border-radius:6px;}
+.sb::-webkit-scrollbar-thumb:hover{background:#F2C94C;}
 .sb-logo{padding:16px 16px 14px;border-bottom:1px solid rgba(255,255,255,.08);}
 .sb-logoimg{width:100%;max-width:160px;display:block;margin:2px auto 10px;}
 .sb-logo .mark{font-family:'Syne';font-weight:800;font-size:17px;color:#fff;letter-spacing:.5px;}
