@@ -982,7 +982,7 @@ function renderTiktok(){
       yI:{position:'right',beginAtZero:true,grid:{display:false},ticks:{color:p.muted,font:{size:9},callback:v=>money(v)}},
       yC:{position:'right',display:false}}}});
 
-  const retL=['Views','2s','6s','25%','50%','75%','100%'],retV=[m.vv,m.v2,m.v6,m.p25,m.p50,m.p75,m.p100];
+  const retL=['Views','2s','25%','50%','75%','100%'],retV=[m.vv,m.v2,m.p25,m.p50,m.p75,m.p100];
   draw('chTtRet',{type:'bar',data:{labels:retL,datasets:[{label:'Retenção',data:retV.map(v=>pct(v,m.vv)),backgroundColor:retL.map((_,i)=>i===0?p.accent:p.cy),borderRadius:5}]},
     options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false},
       datalabels:{display:lblDisplay(false),color:p.text,font:lblFont(),anchor:'end',align:'top',offset:1,formatter:v=>fmt(v,v<10?1:0)+'%'},

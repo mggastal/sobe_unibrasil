@@ -16,6 +16,7 @@ Desenvolvido por Sobé Estratégias.
 
 import pandas as pd
 import json
+import re
 from datetime import date
 from pathlib import Path
 
@@ -47,7 +48,7 @@ ABAS = {
     "bk_platform": "breakdown-platform",
     "g_bd_gender": "google-breakdown-gender",
     "g_bd_age": "google-breakdown-age",
-    "tiktok": "tiktok-ads",
+    "tiktok": "tiktok_ads",
     # blocos anuais fixos
     "meta_2024": "meta-2024",
     "meta_2025": "meta-2025",
@@ -451,7 +452,7 @@ if CAMP_APENAS:
     gdemo_gen, gdemo_age = [], []
 
 # ───────────────────────── TIKTOK (engajamento) ─────────────────────────
-# Aba 'tiktok-ads' (Stract, nível anúncio/dia). Campanha de engajamento/seguidores:
+# Aba 'tiktok_ads' (Stract, nível anúncio/dia). Campanha de engajamento/seguidores:
 # não há lead — o foco é view, retenção (2s/6s/quartis) e interação.
 # Alcance NÃO entra: não é somável entre dias.
 # As capas do TikTok vêm com URL assinada que expira em ~24h, então baixamos para
@@ -484,10 +485,21 @@ def baixar_thumb_tt(ad_id, url):
         print(f"  ! capa TikTok {ad_id} não baixou: {e}")
     return ""
 
+def tt_id(row):
+    """ID do anúncio. O Sheets às vezes formata o Ad ID como número ('1,8767E+15'),
+    o que perde os dígitos — aí usamos o VideoID da URL da capa (único por criativo)."""
+    s = str(row.get("Ad ID", "")).strip()
+    if s.isdigit():
+        return s
+    m = re.search(r"VideoID=(\w+)", str(row.get("Video Thumbnail URL", "")))
+    if m:
+        return m.group(1)
+    return f'{s}|{row.get("Adgroup Name", "")}|{row.get("Ad Name", "")}'
+
 def build_tiktok(df):
     # gviz devolve a 1ª aba quando o nome não existe — sem as colunas do TikTok, ignora
     if "Paid Followers" not in df.columns or "Video Views" not in df.columns:
-        print("  (aba tiktok-ads ausente ou sem colunas do TikTok — página fica vazia)")
+        print("  (aba tiktok_ads ausente ou sem colunas do TikTok — página fica vazia)")
         return [], {}
     df = df.copy()
     df["Date"] = parse_data(df["Date"])
@@ -496,7 +508,7 @@ def build_tiktok(df):
         df[k] = numcol(df, c)
     # tempo médio por view → segundos totais (somável); média = wt / vv
     df["wt"] = numcol(df, "Video Average Watch Time Per Video View") * df["vv"]
-    df["id"] = df["Ad ID"].astype(str) if "Ad ID" in df.columns else df["Ad Name"].astype(str)
+    df["id"] = df.apply(tt_id, axis=1)
     df["dstr"] = df["Date"].dt.strftime("%Y-%m-%d")
     ks = list(TT_COLS) + ["wt"]
     agg = df.groupby(["dstr", "Campaign Name", "id"], as_index=False)[ks].sum()
