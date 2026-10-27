@@ -2,7 +2,7 @@ name: Atualizar Dashboard UniBrasil
 
 on:
   schedule:
-    - cron: '0 9 * * *'   # 06:00 Brasília
+    - cron: '17 * * * *' # roda a cada hora, no minuto 17
   workflow_dispatch:        # permite rodar manualmente pela aba Actions
 
 concurrency:
